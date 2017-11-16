@@ -1,5 +1,5 @@
 /**
- * CreateTags.java
+ * Tagger.java
  * Creates tags for each DataEntry class
  */
 
