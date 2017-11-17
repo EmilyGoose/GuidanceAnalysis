@@ -1,9 +1,10 @@
 /**
- * CreateTags.java
+ * Tagger.java
  * Creates tags for each DataEntry class
  */
 
 //Import statements
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ public class Tagger {
 		possibleTags = new ArrayList<>();
 	}
 	
-	public ArrayList<String> GetTags(String programCode, String programName) {
+	public ArrayList<String> getTags(String programCode, String programName) {
 		if (tagDatabase.containsKey(programCode)) {
 			//The course code already has tags associated with it! Just return those
 			return tagDatabase.get(programCode);
@@ -38,5 +39,10 @@ public class Tagger {
 			tagDatabase.put(programCode, newTags);
 			return newTags;
 		}
+	}
+
+	public ArrayList<String> editTags(String programCode, String programName) {
+		//TODO: Call the GUI
+		return this.getTags(programCode, programName);
 	}
 }
