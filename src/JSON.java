@@ -31,10 +31,12 @@ public class JSON {
         return outputJSON.toString();
     }
 
+    //When the function is called without indentationLevel, default to 0
     public static String toJSONString(HashMap<String, ArrayList<String>> map) {
         return toJSONString(map, 0);
     }
 
+    //When an ArrayList is passed, do something different
     public static String toJSONString(ArrayList<String> list, int indentationLevel) {
         StringBuilder outputJSON = new StringBuilder();
         outputJSON.append(String.join("", Collections.nCopies(indentationLevel, "   ")));
@@ -54,7 +56,13 @@ public class JSON {
         return outputJSON.toString();
     }
 
+    //When an ArrayList is passed without indentationLevel
     public static String toJSONString(ArrayList<String> list) {
         return toJSONString(list, 0);
+    }
+
+    public static HashMap<String, ArrayList<String>> decodeJSON(String JSONString) {
+
+        return null;
     }
 }
