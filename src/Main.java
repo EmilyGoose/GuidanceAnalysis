@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,10 +14,11 @@ public class Main {
     String school = "";
     String programName = "";
     String programCode = "";
-    ArrayList<String> tags = null;
+    ArrayList<String> tags = new ArrayList<String>();
     
     
-    ArrayList<DataEntry> data = new ArrayList<DataEntry>();
+    ArrayList<DataEntry> allData = new ArrayList<DataEntry>();
+    ArrayList<DataEntry> acceptedData = new ArrayList<DataEntry>();
     
     try{
       uniFile = new File("uniFile.csv");
@@ -40,36 +40,39 @@ public class Main {
         row = row.substring(row.indexOf(",") + 1);
       }
       
-      if(row.indexOf("\"") == 0){ //saving school
-    	  row = row.substring(1);
-    	  school = row.substring(0, row.indexOf("\"")); 
-    	  row = row.substring(row.indexOf("\"") + 2);
+      if(row.indexOf("\"") == 0){ //saving school, check if there are commas
+        row = row.substring(1);
+        school = row.substring(0, row.indexOf("\"")); 
+        row = row.substring(row.indexOf("\"") + 2);
       }else{
-    	  school = row.substring(0, row.indexOf(",")); 
-          row = row.substring(row.indexOf(",") + 1); 
+        school = row.substring(0, row.indexOf(",")); 
+        row = row.substring(row.indexOf(",") + 1); 
       }
       
       if(row.indexOf("\"") == 0){ //saving program code, check if there are commas
-    	  row = row.substring(1);
-    	  programCode = row.substring(0, row.indexOf("\"")); 
-    	  row = row.substring(row.indexOf("\"") + 2);
+        row = row.substring(1);
+        programCode = row.substring(0, row.indexOf("\"")); 
+        row = row.substring(row.indexOf("\"") + 2);
       }else{
-    	  programCode = row.substring(0, row.indexOf(","));
-    	  row = row.substring(row.indexOf(",") + 1);
+        programCode = row.substring(0, row.indexOf(","));
+        row = row.substring(row.indexOf(",") + 1);
       }
       
-      if(row.indexOf("\"") == 0){//saving program name
-    	  row = row.substring(1);
-    	  programName = row.substring(0, row.indexOf("\"")); 
-    	  row = row.substring(row.indexOf("\"") + 2);
+      if(row.indexOf("\"") == 0){//saving program name, check if there are commas
+        row = row.substring(1);
+        programName = row.substring(0, row.indexOf("\"")); 
+        row = row.substring(row.indexOf("\"") + 2);
       }else{
-    	  programName = row.substring(0, row.indexOf(","));
-    	  row = row.substring(row.indexOf(",") + 1);
+        programName = row.substring(0, row.indexOf(","));
+        row = row.substring(row.indexOf(",") + 1);
       }
       
-      // <><><><><><><><>< Tags add here<><><><><><><<>><><><><><><><><><><><><><><>
+      //tags = getTags(programCode, programName);
       
-      data.add(new DataEntry(status, school, programName, programCode, tags)); 
+      allData.add(new DataEntry(status, school, programName, programCode, tags)); 
+      if(status = true){
+        acceptedData.add(new DataEntry(status, school, programName, programCode, tags));
+      }
     }
     
     
@@ -77,70 +80,113 @@ public class Main {
     while(input2.hasNext() == true){
       row = input2.nextLine();
       
-      if(row.indexOf("\"") == 0){ //saving school
-    	  school = row.substring(1, row.indexOf("\"")); 
-    	  row = row.substring(row.indexOf(",") + 1);
+      if(row.indexOf("\"") == 0){ //saving school, check if there are commas
+        school = row.substring(1, row.indexOf("\"")); 
+        row = row.substring(row.indexOf(",") + 1);
       }else{
-    	  school = row.substring(0, row.indexOf(",")); 
-          row = row.substring(row.indexOf(",") + 1); 
+        school = row.substring(0, row.indexOf(",")); 
+        row = row.substring(row.indexOf(",") + 1); 
       }
       
       if(row.indexOf("\"") == 0){ //saving program code, check if there are commas
-    	  programCode = row.substring(1, row.indexOf(" - ")); 
-    	  row = row.substring(row.indexOf(" - ") + 3);
+        programCode = row.substring(1, row.indexOf(" - ")); 
+        row = row.substring(row.indexOf(" - ") + 3);
       }else{
-    	  programCode = row.substring(0, row.indexOf(" - "));
-    	  row = row.substring(row.indexOf(" - ") + 3);
+        programCode = row.substring(0, row.indexOf(" - "));
+        row = row.substring(row.indexOf(" - ") + 3);
       }
       
-      if(row.indexOf("\"") != -1){ //saving program name
-    	  programName = row.substring(0, row.indexOf("\"")); 
-    	  row = row.substring(row.indexOf("\"") + 1);
+      if(row.indexOf("\"") != -1){ //saving program name, check if there are commas
+        programName = row.substring(0, row.indexOf("\"")); 
+        row = row.substring(row.indexOf("\"") + 1);
       }else{
-    	  programName = row.substring(0, row.indexOf(",")); 
-    	  row = row.substring(row.indexOf(",") + 1);
+        programName = row.substring(0, row.indexOf(",")); 
+        row = row.substring(row.indexOf(",") + 1);
       }
       
       row = row.substring(row.indexOf(",") + 1); //disregard entry point
       
-      if(row.indexOf(",") == 0){ //saving status
+      if(row.indexOf(",") == 0){ //saving status, comma at zero means cell is blank
         status = false;
       }else{
         status = true;
       }
-      // <><><><><><><><>< Tags add here<><><><><><><<>><><><><><><><><><><><><><><>
       
-      data.add(new DataEntry(status, school, programName, programCode, tags)); 
+      //tags = getTags(programCode, programName); //add tags
+      
+      allData.add(new DataEntry(status, school, programName, programCode, tags)); 
+      if(status = true){
+        acceptedData.add(new DataEntry(status, school, programName, programCode, tags));
+      }
     }
     
-    /*for(int i = 0; i < data.size(); i++){ //Testing
-     System.out.println(data.get(i).getStatus());     
-     */
-    
+    /*for(int i = 0; i < allData.size(); i++){ //Testing
+      System.out.println(allData.get(i).getStatus());     
+    }
+    ArrayList<String> temp independent = new ArrayList<String>();
+    System.out.println(analysis(
+                                
+                                
     input1.close();
     input2.close();
+    */
   }
   
-  public static void analysis(ArrayList<String> filters, ArrayList<DataEntry> data){
-	  int counter = 0;
-	  ArrayList<DataEntry> match = new ArrayList<DataEntry>();
-	  for(int x = 0; x < data.size(); x ++){
-		  match.set(x, data.get(x));
-	  }
-	  for(int i = 0; i < filters.size(); i ++){ //taking DataEntries off the list if they do not fit the filters
-		  for(int j = 0; j < data.size(); j ++){
-			  if(data.get(j).getTags().indexOf(filters.get(i)) == -1){
-				  match.set(j, null);
-			  }
-		  }
-	  }
-	  while(match.indexOf(null) != -1){
-		  if(match.get(counter) == null){
-			  match.remove(counter);
-			  counter = 0;
-		  }else{
-			  counter++;
-		  }
-	  }
+  
+  public static ArrayList<Integer> analysis(ArrayList<String> independent, ArrayList<String> dependent, String dependentType, ArrayList<DataEntry> data){
+    ArrayList<Integer> percentages = new ArrayList<Integer>(); 
+    int[] countArray = new int[independent.size()];
+    ArrayList<DataEntry> matchData = new ArrayList<DataEntry>();
+
+    
+    if(dependentType == "Tags"){
+      for(int i = 0; i < independent.size(); i ++){
+        for(int j = 0; j < data.size(); j ++){
+          if(data.get(j).getSchool() == independent.get(i)){
+            matchData.add(data.get(j));
+          }
+        }
+      }
+      
+      for(int i = 0; i < matchData.size(); i ++){
+        for(int j = 0; j < independent.size(); j ++){
+          for(int k = 0; k < matchData.get(i).getTags().size(); k ++){
+            if(independent.get(j) == matchData.get(i).getTags().get(k)){
+              countArray[j]++;
+            }
+          }
+        }
+      }
+
+    }else if(dependentType == "School"){
+      for(int i = 0; i < independent.size(); i ++){
+        for(int j = 0; j < data.size(); j ++){
+          for(int k = 0; k < matchData.get(i).getTags().size(); k ++){
+            if(independent.get(j) == matchData.get(i).getTags().get(k)){
+              matchData.add(data.get(j));
+              break;
+            }
+          }
+        }
+      }
+      
+      for(int i = 0; i < matchData.size(); i ++){
+        for(int j = 0; j < independent.size(); j ++){
+          if(independent.get(j) == matchData.get(i).getSchool()){
+            countArray[j]++;
+          }
+        }
+      }
+    }
+  
+    for(int a = 0; a < countArray.length; a ++){
+      countArray[a] = (countArray[a]/matchData.size())*100;
+    }
+    
+    for(int b = 0; b < countArray.length; b ++){
+      percentages.add(countArray[b]);
+    }
+    
+    return percentages;
   }
 }
