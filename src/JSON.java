@@ -63,25 +63,83 @@ public class JSON {
 
     //Parses JSON from a String to an ArrayList
     public static ArrayList<String> decodeJSONList(String JSONString) {
+        //Removes the first and last character (It's assumed they're both square brackets)
+        JSONString = JSONString.substring(1, JSONString.length() - 1);
 
-        return null;
+        //ArrayList for output
+        ArrayList<String> outputList = new ArrayList<>();
+
+        //Variables to check whether we're looking at an element
+        boolean inElement = false;
+        int startIndex = 0;
+        for (int i = 0; i < JSONString.length(); i++) {
+            if (JSONString.charAt(i) == '"') {
+                if (inElement) {
+                    inElement = false;
+                    //Take the element and append it to the ArrayList
+                    outputList.add(JSONString.substring(startIndex, i));
+                } else {
+                    inElement = true;
+                    //The string starts at i+1, since i is the quote itself.
+                    startIndex = i + 1;
+                }
+            }
+        }
+        return outputList;
     }
 
     //Parses JSON from a String to a HashMap
     public static HashMap<String, ArrayList<String>> decodeJSON(String JSONString) {
+        //Declare the output HashMap
+        HashMap<String, ArrayList<String>> outputMap = new HashMap<>();
 
+        //Removes the first and last character (It's assumed they're both square brackets)
+        JSONString = JSONString.substring(1, JSONString.length() - 1);
+
+        //Declare variables we're going to use for parsing
         int depth = 0;
+        boolean inElement = false;
+        //currentElementDelimiter is required so that quotes within a square bracketed list don't trip inElement
+        char currentElementDelimiter = '\0';
         int startIndex = 0;
-        int endIndex = 0;
+        String currentKey = null;
 
         for (int i = 0; i < JSONString.length(); i++) {
-            if (JSONString.charAt(i) == '{' || JSONString.charAt(i) == '[') {
-                depth += 1;
-            } else if (JSONString.charAt(i) == '}' || JSONString.charAt(i) == ']') {
-                depth -=1;
+            //Make sure we're not catching brackets located inside of a string
+            if (!inElement) {
+                if (JSONString.charAt(i) == '{') {
+                    depth += 1;
+                } else if (JSONString.charAt(i) == '}') {
+                    depth -=1;
+                } else if (JSONString.charAt(i) == '[') {
+                    startIndex = i;
+                    inElement = true;
+                    currentElementDelimiter = JSONString.charAt(i);
+                    startIndex = i;
+                } else if (JSONString.charAt(i) == '"') {
+                    inElement = true;
+                    currentElementDelimiter = JSONString.charAt(i);
+                    startIndex = i + 1;
+                }
+            } else if (JSONString.charAt(i) == ']' && currentElementDelimiter == '[') {
+                inElement = false;
+                ArrayList<String> newList = decodeJSONList(JSONString.substring(startIndex, i + 1));
+                //The only list we should encounter at depth 0 is the possibleTags list
+                if (depth == 0) {
+                    outputMap.put("possibleTags", newList);
+                } else {
+                    outputMap.put(currentKey, newList);
+                    currentKey = null;
+                }
+            } else if (JSONString.charAt(i) == '"' && currentElementDelimiter == '"') {
+                inElement = false;
+                //There's no reason this should be false but might as well check
+                if (currentKey == null) {
+                    currentKey = JSONString.substring(startIndex, i);
+                }
             }
         }
 
-        return null;
+        return outputMap;
     }
 }

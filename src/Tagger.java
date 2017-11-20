@@ -27,9 +27,9 @@ public class Tagger {
                 JSONString.append(nextLine);
                 nextLine = input.readLine();
             }
-            //todo delet this once writing works
-            tagDatabase = new HashMap<>();
-            possibleTags = new ArrayList<>();
+
+            tagDatabase = JSON.decodeJSON(JSONString.toString());
+            possibleTags = tagDatabase.remove("possibleTags");
         } catch (FileNotFoundException E) {
 	        //This exception happens if the file doesn't exist
             tagDatabase = new HashMap<>();
@@ -37,6 +37,8 @@ public class Tagger {
         } catch (IOException E) {
 	        System.out.println("Exception while fetching tags: " + E);
         }
+
+        System.out.println(tagDatabase);
 	}
 
 	private boolean saveTags() {
@@ -66,8 +68,9 @@ public class Tagger {
 			//Prompt the user for tags
 			//TODO: Make this a GUI
 			//Scanner is temporary, only for testing
+            System.out.println("No tags found, enter manual");
 			String newTagString = inputScanner.nextLine();
-			ArrayList<String> newTags = new ArrayList<String>(Arrays.asList(newTagString.split(",")));
+			ArrayList<String> newTags = new ArrayList<>(Arrays.asList(newTagString.split(",")));
 			//End temporary testing code
 
             //Add new elements to possibleTags while keeping out duplicates
