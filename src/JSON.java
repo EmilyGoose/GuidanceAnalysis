@@ -61,7 +61,26 @@ public class JSON {
         return toJSONString(list, 0);
     }
 
+    //Parses JSON from a String to an ArrayList
+    public static ArrayList<String> decodeJSONList(String JSONString) {
+
+        return null;
+    }
+
+    //Parses JSON from a String to a HashMap
     public static HashMap<String, ArrayList<String>> decodeJSON(String JSONString) {
+
+        int depth = 0;
+        int startIndex = 0;
+        int endIndex = 0;
+
+        for (int i = 0; i < JSONString.length(); i++) {
+            if (JSONString.charAt(i) == '{' || JSONString.charAt(i) == '[') {
+                depth += 1;
+            } else if (JSONString.charAt(i) == '}' || JSONString.charAt(i) == ']') {
+                depth -=1;
+            }
+        }
 
         return null;
     }
