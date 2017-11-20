@@ -1,7 +1,10 @@
+
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.io.PrintWriter;
+import java.lang.StringBuilder;
 
 public class Main {
   public static void main(String args[]){
@@ -121,7 +124,7 @@ public class Main {
     }
     
     /*for(int i = 0; i < allData.size(); i++){ //Testing
-      System.out.println(allData.get(i).getStatus());     
+      System.out.println(allData.get(i).getTags());     
     }
     ArrayList<String> temp independent = new ArrayList<String>();
     System.out.println(analysis(
@@ -130,8 +133,60 @@ public class Main {
     input1.close();
     input2.close();
     */
+    writeToFile(acceptedData);
   }
   
+  public static void writeToFile(ArrayList<DataEntry> data){
+    File storage = null; 
+    PrintWriter output = null;
+    try{
+      storage = new File("storage.csv");
+      output = new PrintWriter(storage);
+    }catch(FileNotFoundException e){
+      System.out.println("File not found");
+    }
+    //status, school, programName, programCode, tags
+    StringBuilder outputString = new StringBuilder();
+    output.println("Accepted Status,School,Program Name,Program Code,Tags");
+    
+    for(int i = 0; i < data.size(); i ++){
+      outputString.setLength(0);
+      outputString.append(data.get(i).getStatus() + ","); //adding status to StringBuilder, add quotes if there are commas
+      if(data.get(i).getSchool().indexOf(",") != -1){
+        outputString.append("\"" + data.get(i).getSchool() + "\"" + ",");
+      }else{
+        outputString.append(data.get(i).getSchool() + ",");
+      }
+      
+      if(data.get(i).getProgramName().indexOf(",") != -1){ //adding program name to StringBuilder, add quotes if there are commas
+        outputString.append("\"" + data.get(i).getProgramName() + "\"" + ",");
+      }else{
+        outputString.append(data.get(i).getProgramName() + ",");
+      }
+      
+      if(data.get(i).getProgramCode().indexOf(",") != -1){ //adding program code, add quotes if there are commas
+        outputString.append("\"" + data.get(i).getProgramCode() + "\"" + ",");
+      }else{
+        outputString.append(data.get(i).getProgramCode() + ",");
+      }
+      
+      if(data.get(i).getTags().size() > 1){ //adding tags to StringBuilder if there are more than one
+        outputString.append("\"");
+        for(int j = 0; j < data.get(i).getTags().size(); j ++){
+        	if(j != data.get(i).getTags().size() - 1){ //adds commas after every tag except the last
+        		outputString.append(data.get(i).getTags().get(j) + ",");
+        	}else{
+        		outputString.append(data.get(i).getTags().get(j));
+        	}
+        }
+        outputString.append("\"");
+      }else if(data.get(i).getTags().size() == 1){ //add tag to StringBuilder if there is a single one
+    	  outputString.append(data.get(i).getTags().get(0));
+      }
+      output.println(outputString);
+    }
+    output.close(); //close PrintWriter
+  }
   
   public static ArrayList<Integer> analysis(ArrayList<String> independent, ArrayList<String> dependent, String dependentType, ArrayList<DataEntry> data){
     ArrayList<Integer> percentages = new ArrayList<Integer>(); 
@@ -190,3 +245,4 @@ public class Main {
     return percentages;
   }
 }
+
