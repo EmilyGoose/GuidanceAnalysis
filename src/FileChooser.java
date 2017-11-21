@@ -22,6 +22,13 @@ public class FileChooser extends JPanel{
 
     public File getFile() {
         fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+	    
+	if(schoolType.equals("University")){
+        	fc.setDialogTitle("Choose a university file:");
+        }else if(schoolType.equals("College")){
+        	fc.setDialogTitle("Choose a college file:");
+        }
+
         fc.setDialogTitle("Choose a university file:");
 
         fc.setAcceptAllFileFilterUsed(false);
