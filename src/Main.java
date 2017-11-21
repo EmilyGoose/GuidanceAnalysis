@@ -13,7 +13,7 @@ public class Main {
     
     allData = readNewData();
     
-    for(int i = 0; i < allData.size(); i ++){
+    for(int i = 0; i < allData.size(); i ++){ //getting accepted data
       if(allData.get(i).getStatus() == true){
         acceptedData.add(allData.get(i));
       }
@@ -24,10 +24,10 @@ public class Main {
     dependent.add("Math");
     
     ArrayList<String> independent = new ArrayList<String>();
-    independent.add("SENE");
+    independent.add("University of Toronto");
     independent.add("University of Waterloo");
     
-    System.out.println(analysis(independent, dependent, "Tags", acceptedData, true));
+    System.out.println(analysis(dependent, "Tags", independent, "School", acceptedData, true));
     /*for(int i = 0; i < acceptedData.size(); i++){ //Testing
      System.out.println(acceptedData.get(i).getTags());     
      }*/
@@ -46,13 +46,16 @@ public class Main {
     ArrayList<String> tags = new ArrayList<String>();    
     ArrayList<DataEntry> allData = new ArrayList<DataEntry>();
     ArrayList<DataEntry> acceptedData = new ArrayList<DataEntry>();
+    FileChooser fileChoose = new FileChooser();
+    Tagger tagger = new Tagger();
+    
+    //testing
     tags.add("Engineering");
-    tags.add("Science");
     tags.add("Math");
     
     try{ //load files and create scanners, return error message if there is an error
-      uniFile = new File("uniFile.csv");
-      collegeFile = new File("collegeFile.csv");
+      uniFile = fileChoose.getFile("University");
+      collegeFile = fileChoose.getFile("College");
       input1 = new Scanner(collegeFile);
       input2 = new Scanner(uniFile);
     }catch(FileNotFoundException e){
@@ -95,7 +98,7 @@ public class Main {
         programName = row.substring(0, row.indexOf(","));
         row = row.substring(row.indexOf(",") + 1);
       }
-      //tags = getTags(programCode, programName);
+      //tags = tagger.getTags(programCode, programName);
       
       allData.add(new DataEntry(status, school, programName, programCode, new ArrayList<String>())); 
     }
@@ -133,7 +136,7 @@ public class Main {
         status = true;
       }
       
-      //tags = getTags(programCode, programName); //add tags
+      //tags = tagger.getTags(programCode, programName); //add tags
       
       allData.add(new DataEntry(status, school, programName, programCode, tags)); 
     }  
@@ -143,7 +146,7 @@ public class Main {
     return allData;
   }
   
-  public static ArrayList<Integer> analysis(ArrayList<String> independent, ArrayList<String> dependent, String dependentType, ArrayList<DataEntry> data, boolean and){
+  public static ArrayList<Integer> analysis(ArrayList<String> independent, String independentType, ArrayList<String> dependent, String dependentType, ArrayList<DataEntry> data, boolean and){
     ArrayList<Integer> percentages = new ArrayList<Integer>(); 
     int[] countArray = new int[independent.size()];
     ArrayList<DataEntry> matchData = new ArrayList<DataEntry>();
@@ -154,7 +157,7 @@ public class Main {
       countArray[i] = 0;
     }
     
-    if(dependentType == "Tags"){ 
+    if(dependentType.equals("Tags") && independentType.equals("School")){ 
       for(int i = 0; i < independent.size(); i ++){ //loop through all the independent variables and add data entries that fit into an ArrayList
         for(int j = 0; j < data.size(); j ++){
           if(data.get(j).getSchool().equals(independent.get(i))){
@@ -162,7 +165,6 @@ public class Main {
           }
         }
       }
-      System.out.println(matchData.size());
       
       if(and == false){ //or option selected, returns data that has one or more of the tags
         for(int i = 0; i < matchData.size(); i ++){ //loop through the matchData and check for tags that match
@@ -200,34 +202,38 @@ public class Main {
         }
       }
       
-      /*}else if(dependentType == "School"){
-       for(int j = 0; j < data.size(); j ++){
-       exit = false;
-       for(int i = 0; i < independent.size() && exit == false; i ++){
-       for(int k = 0; k < data.get(j).getTags().size() && exit == false; k ++){
-       if(independent.get(i) == data.get(j).getTags().get(k)){
-       matchData.add(data.get(j));
-       exit = true;
-       }
-       }
-       }
-       }
-       for(int i = 0; i < matchData.size(); i ++){ //individual programs cannot be in multiple schools
-       for(int j = 0; j < dependent.size(); j ++){
-       if(dependent.get(j) == matchData.get(i).getSchool()){
-       for(int k = 0; k < data.get(j).getTags().size() && exit == false; k ++){
-       if(independent.get(i) == data.get(j).getTags().get(k)){
-       matchData.add(data.get(j));
-       exit = true;
-       }
-       }
-       }
-       }
-       }*/
+      }else if(dependentType.equals("School") && independentType.equals("Tags")){ //CAN ONLY TAKE IN ONE TAG
+      for(int j = 0; j < data.size(); j ++){
+        exit = false;
+        for(int i = 0; i < independent.size() && exit == false; i ++){
+          for(int k = 0; k < data.get(j).getTags().size() && exit == false; k ++){
+            if(independent.get(i) == data.get(j).getTags().get(k)){
+              matchData.add(data.get(j));
+              exit = true;
+            }
+          }
+        }
+      }
+
+      for(int i = 0; i < matchData.size(); i ++){ //individual programs cannot be in multiple schools
+        exit = false;
+        for(int j = 0; j < dependent.size() && exit == false; j ++){
+          if(dependent.get(j).equals(matchData.get(i).getSchool())){
+            for(int k = 0; k < matchData.get(i).getTags().size() && exit == false; k ++){
+              for(int m = 0; m < independent.size() && exit == false; m ++){
+                if(independent.get(m).equals(matchData.get(i).getTags().get(k))){
+                  countArray[m] = countArray[m] + 1;
+                  matchCount++;
+                  exit = true;
+                }
+              }
+            }
+          }
+        }
+      }
     }
     
     for(int a = 0; a < countArray.length; a ++){ //changing each count to a percentage
-      System.out.println(countArray[a]);
       percentages.add((int)(Math.round(countArray[a]*100.0/matchCount)));
     }
     return percentages; //returning percentages
@@ -285,7 +291,7 @@ public class Main {
     output.close(); //close PrintWriter
   }
   
-  public ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns arraylist of unique schools
+  public ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns ArrayList of unique schools
     ArrayList<String> schools = new ArrayList<String>();
     for(int i = 0; i < data.size(); i ++){
       if(schools.indexOf(data.get(i).getSchool()) != -1){
@@ -295,7 +301,7 @@ public class Main {
     return schools;
   }
   
-  public ArrayList<String> getAllProgramNames(ArrayList<DataEntry> data){ //returns arraylist of unique program names
+  public ArrayList<String> getAllProgramNames(ArrayList<DataEntry> data){ //returns ArrayList of unique program names
     ArrayList<String> programNames = new ArrayList<String>();
     for(int i = 0; i < data.size(); i ++){
       if(programNames.indexOf(data.get(i).getProgramName()) != -1){
@@ -305,5 +311,4 @@ public class Main {
     return programNames;
   }
 }
-
 
