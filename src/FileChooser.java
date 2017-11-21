@@ -20,10 +20,10 @@ public class FileChooser extends JPanel{
     	super(new BorderLayout());
     }
 
-    public File getFile() {
+    public File getFile(String schoolType) {
         fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 	    
-	if(schoolType.equals("University")){
+	    if(schoolType.equals("University")){
         	fc.setDialogTitle("Choose a university file:");
         }else if(schoolType.equals("College")){
         	fc.setDialogTitle("Choose a college file:");
