@@ -284,6 +284,26 @@ public class Main {
     }
     output.close(); //close PrintWriter
   }
+  
+  public ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns arraylist of unique schools
+    ArrayList<String> schools = new ArrayList<String>();
+    for(int i = 0; i < data.size(); i ++){
+      if(schools.indexOf(data.get(i).getSchool()) != -1){
+        schools.add(data.get(i).getSchool());
+      }
+    }
+    return schools;
+  }
+  
+  public ArrayList<String> getAllProgramNames(ArrayList<DataEntry> data){ //returns arraylist of unique program names
+    ArrayList<String> programNames = new ArrayList<String>();
+    for(int i = 0; i < data.size(); i ++){
+      if(programNames.indexOf(data.get(i).getProgramName()) != -1){
+        programNames.add(data.get(i).getProgramName());
+      }
+    }
+    return programNames;
+  }
 }
 
 
