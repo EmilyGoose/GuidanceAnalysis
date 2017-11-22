@@ -19,18 +19,37 @@ public class Main {
       }
     }
     
-    //_______________________________TESTING_____________________________________
-    ArrayList<String> dependent = new ArrayList<String>();
-    dependent.add("Math");
+   //___________________TEMPORARY CONSOLE ANALYSIS METHOD TESTING UNTIL GUI MADE______________________
+    System.out.println("Please enter the type of the dependent variable (\"Tags\" or \"AcceptedStatus\")");
+    dependentType = input.nextLine();
     
-    ArrayList<String> independent = new ArrayList<String>();
-    independent.add("University of Toronto");
-    independent.add("University of Waterloo");
+    if(dependentType.equals("Tags")){
+      System.out.println("Please enter the Tags to be searched. Type \"exit\" when done.");
+      while(userInput.equals("exit") == false){
+        userInput = input.nextLine();
+        if(userInput.equals("exit") == false){
+          dependent.add(userInput);
+        }
+      }
+    }
     
-    System.out.println(analysis(dependent, "Tags", independent, "School", acceptedData, true));
-    /*for(int i = 0; i < acceptedData.size(); i++){ //Testing
-     System.out.println(acceptedData.get(i).getTags());     
-     }*/
+    userInput = "";
+    
+    if(dependentType.equals("Tags")){
+      independentType = "School";
+    }else if(dependentType.equals("AcceptedStatus")){
+      independentType = "School";
+    }
+    
+    System.out.println("Please enter the Schools you would like to filter by. Type \"exit\" when done.");
+    while(userInput.equals("exit") == false){
+      userInput = input.nextLine();
+      if(userInput.equals("exit") == false){
+        independent.add(userInput);
+      }
+    }
+    
+    System.out.println(analysis(independent, independentType, dependent, dependentType, allData, true));
   }
   
   public static ArrayList<DataEntry> readNewData(){
@@ -202,31 +221,20 @@ public class Main {
         }
       }
       
-      }else if(dependentType.equals("School") && independentType.equals("Tags")){ //CAN ONLY TAKE IN ONE TAG
-      for(int j = 0; j < data.size(); j ++){
-        exit = false;
-        for(int i = 0; i < independent.size() && exit == false; i ++){
-          for(int k = 0; k < data.get(j).getTags().size() && exit == false; k ++){
-            if(independent.get(i) == data.get(j).getTags().get(k)){
-              matchData.add(data.get(j));
-              exit = true;
-            }
+      }else if(dependentType.equals("AcceptedStatus") && independentType.equals("School")){
+      for(int i = 0; i < independent.size(); i ++){ //loop through all the independent variables and add data entries that fit into an ArrayList
+        for(int j = 0; j < data.size(); j ++){
+          if(data.get(j).getSchool().equals(independent.get(i))){
+            matchData.add(data.get(j));
           }
         }
-      }
-
-      for(int i = 0; i < matchData.size(); i ++){ //individual programs cannot be in multiple schools
-        exit = false;
-        for(int j = 0; j < dependent.size() && exit == false; j ++){
-          if(dependent.get(j).equals(matchData.get(i).getSchool())){
-            for(int k = 0; k < matchData.get(i).getTags().size() && exit == false; k ++){
-              for(int m = 0; m < independent.size() && exit == false; m ++){
-                if(independent.get(m).equals(matchData.get(i).getTags().get(k))){
-                  countArray[m] = countArray[m] + 1;
-                  matchCount++;
-                  exit = true;
-                }
-              }
+      }  
+      for(int i = 0; i < matchData.size(); i ++){
+        if(matchData.get(i).getStatus() == true){ 
+          for(int m = 0; m < independent.size(); m ++){//Remove after adding GUI, pass in acceptedData instead
+            if(independent.get(m).equals(matchData.get(i).getSchool())){//add to count corresponding with school if it is accepted
+              countArray[m] = countArray[m] + 1;
+              matchCount++;
             }
           }
         }
