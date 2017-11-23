@@ -22,21 +22,15 @@ public class FileChooser extends JPanel{
 
     public File getFile(String schoolType) {
         fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-	    
-	    if(schoolType.equals("University")){
-        	fc.setDialogTitle("Choose a university file:");
-        }else if(schoolType.equals("College")){
-        	fc.setDialogTitle("Choose a college file:");
-        }
 
-        fc.setDialogTitle("Choose a university file:");
+        fc.setDialogTitle("Choose a " + schoolType.toLowerCase() + " file:");
 
         fc.setAcceptAllFileFilterUsed(false);
         FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV files", "csv");
         fc.addChoosableFileFilter(filter);
         //fc.setFileSelectionMode(JFileChooser.FILES_ONLY); //already the default mode
 
-        int returnValue = fc.showSaveDialog(null);
+        int returnValue = fc.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION){
             File file = fc.getSelectedFile();
             return file;

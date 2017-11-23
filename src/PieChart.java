@@ -15,10 +15,12 @@ public class PieChart extends JPanel {
     //String, Integer mapping of labels to values
     //Values are absolute, percentages are calculated at runtime
     private HashMap<String, Integer> data;
+    private HashMap<String, Integer> colors;
 
     PieChart() {
         super();
         data = new HashMap<>();
+        colors = new HashMap<>();
     }
 
 
@@ -27,9 +29,19 @@ public class PieChart extends JPanel {
         data.put(key, value);
     }
 
+    //Allows a legend to be created separately from the pie chart
+    public HashMap<String, Integer> getColorKeys() {
+        return colors;
+    }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         setDoubleBuffered(true);
+
+        //HashMap for mapping keys to colors (to make a legend)
+        colors = new HashMap<>();
+
+        System.out.println("aaa");
 
         //Set up a system that guarantees unique color across the whole spectrum
         int colorStep = (Integer.parseInt("FFFFFF", 16) - 255) / data.size();
@@ -48,6 +60,9 @@ public class PieChart extends JPanel {
 
             //Set the color of the panel
             g.setColor(new Color(color));
+
+            //Put the key/color mapping into the HashMap
+            colors.put(entry.getKey(), color);
 
             //Calculate the angle required
             int angle = (int)Math.round(percentage * 360);
