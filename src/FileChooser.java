@@ -32,8 +32,7 @@ public class FileChooser extends JPanel{
 
         int returnValue = fc.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION){
-            File file = fc.getSelectedFile();
-            return file;
+            return fc.getSelectedFile();
         }
 
         return null;
