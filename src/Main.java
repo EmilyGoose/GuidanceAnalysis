@@ -180,13 +180,13 @@ public class Main {
         }
       }
       
-      if(and == false){ //or option selected, returns data that has one or more of the tags
+      if(!and){ //or option selected, returns data that has one or more of the tags
         for(int i = 0; i < matchData.size(); i ++){ //loop through the matchData and check for tags that match
           exit = false;
-          for(int j = 0; j < dependent.size() && exit == false; j ++){
-            for(int k = 0; k < matchData.get(i).getTags().size() && exit == false; k ++){
+          for(int j = 0; j < dependent.size() && !exit; j ++){
+            for(int k = 0; k < matchData.get(i).getTags().size() && !exit; k ++){
               if(dependent.get(j).equals(matchData.get(i).getTags().get(k))){
-                for(int m = 0; m < independent.size() && exit == false; m ++){
+                for(int m = 0; m < independent.size() && !exit; m ++){
                   if(independent.get(m).equals(matchData.get(i).getSchool())){
                     countArray[m] = countArray[m] + 1;
                     exit = true;
@@ -197,7 +197,7 @@ public class Main {
             }
           }
         }
-      }else if(and == true){ //and option selected
+      }else if(and){ //and option selected
         for(int i = 0; i < matchData.size(); i ++){ //loop through the matchData and check for tags that match
           exit = false;
           for(int j = 0; j < dependent.size(); j ++){
@@ -205,7 +205,7 @@ public class Main {
               exit = true;
             }
           }
-          if(exit == false){ //if all the tags in the dependent are found in one of the data entries add to the count
+          if(!exit){ //if all the tags in the dependent are found in one of the data entries add to the count
             for(int m = 0; m < independent.size(); m ++){
               if(independent.get(m).equals(matchData.get(i).getSchool())){
                 countArray[m] = countArray[m] + 1;
@@ -225,7 +225,7 @@ public class Main {
         }
       }  
       for(int i = 0; i < matchData.size(); i ++){
-        if(matchData.get(i).getStatus() == true){ 
+        if(matchData.get(i).getStatus()){
           for(int m = 0; m < independent.size(); m ++){//Remove after adding GUI, pass in acceptedData instead
             if(independent.get(m).equals(matchData.get(i).getSchool())){//add to count corresponding with school if it is accepted
               countArray[m] = countArray[m] + 1;
@@ -258,19 +258,19 @@ public class Main {
     for(int i = 0; i < data.size(); i ++){
       outputString.setLength(0);
       outputString.append(data.get(i).getStatus() + ","); //adding status to StringBuilder, add quotes if there are commas
-      if(data.get(i).getSchool().indexOf(",") != -1){
+      if(data.get(i).getSchool().contains(",")){
         outputString.append("\"" + data.get(i).getSchool() + "\"" + ",");
       }else{
         outputString.append(data.get(i).getSchool() + ",");
       }
       
-      if(data.get(i).getProgramName().indexOf(",") != -1){ //adding program name to StringBuilder, add quotes if there are commas
+      if(data.get(i).getProgramName().contains(",")){ //adding program name to StringBuilder, add quotes if there are commas
         outputString.append("\"" + data.get(i).getProgramName() + "\"" + ",");
       }else{
         outputString.append(data.get(i).getProgramName() + ",");
       }
       
-      if(data.get(i).getProgramCode().indexOf(",") != -1){ //adding program code, add quotes if there are commas
+      if(data.get(i).getProgramCode().contains(",")){ //adding program code, add quotes if there are commas
         outputString.append("\"" + data.get(i).getProgramCode() + "\"" + ",");
       }else{
         outputString.append(data.get(i).getProgramCode() + ",");
