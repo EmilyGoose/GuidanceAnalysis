@@ -10,10 +10,16 @@ public class Main {
   public static void main(String args[]){
     ArrayList<DataEntry> allData = new ArrayList<DataEntry>();
     ArrayList<DataEntry> acceptedData = new ArrayList<DataEntry>();
+    ArrayList<String> dependent = new ArrayList<String>();
+    String dependentType = "";
+    ArrayList<String> independent = new ArrayList<String>();
+    String independentType = "";
+    String userInput = "";
+    
+    Scanner input = new Scanner(System.in);
     
     allData = readNewData();
-    
-    for(int i = 0; i < allData.size(); i ++){ //getting accepted data
+    for(int i = 0; i < allData.size(); i ++){
       if(allData.get(i).getStatus() == true){
         acceptedData.add(allData.get(i));
       }
