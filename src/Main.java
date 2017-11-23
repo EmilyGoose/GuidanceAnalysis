@@ -147,7 +147,7 @@ public class Main {
 
         school = rowList.get(0);
         programName = rowList.get(1);
-        status = !rowList.get(2).equals("0");
+        status = rowList.get(3).length() > 0;;
         programCode = "";
 
       //tags = tagger.getTags(programCode, programName); //add tags
