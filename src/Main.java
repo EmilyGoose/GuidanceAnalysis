@@ -1,4 +1,5 @@
 
+import java.util.Arrays;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,10 +9,10 @@ import java.lang.StringBuilder;
 
 public class Main {
   public static void main(String args[]){
-    ArrayList<DataEntry> allData = new ArrayList<DataEntry>();
+    ArrayList<DataEntry> allData;
     ArrayList<DataEntry> acceptedData = new ArrayList<DataEntry>();
     ArrayList<String> dependent = new ArrayList<String>();
-    String dependentType = "";
+    String dependentType;
     ArrayList<String> independent = new ArrayList<String>();
     String independentType = "";
     String userInput = "";
@@ -19,9 +20,9 @@ public class Main {
     Scanner input = new Scanner(System.in);
     
     allData = readNewData();
-    for(int i = 0; i < allData.size(); i ++){
-      if(allData.get(i).getStatus() == true){
-        acceptedData.add(allData.get(i));
+    for(DataEntry entry : allData){
+      if(entry.getStatus()){
+        acceptedData.add(entry);
       }
     }
     
@@ -31,9 +32,9 @@ public class Main {
     
     if(dependentType.equals("Tags")){
       System.out.println("Please enter the Tags to be searched. Type \"exit\" when done.");
-      while(userInput.equals("exit") == false){
+      while(!userInput.equals("exit")){
         userInput = input.nextLine();
-        if(userInput.equals("exit") == false){
+        if(!userInput.equals("exit")){
           dependent.add(userInput);
         }
       }
@@ -48,9 +49,9 @@ public class Main {
     }
     
     System.out.println("Please enter the Schools you would like to filter by. Type \"exit\" when done.");
-    while(userInput.equals("exit") == false){
+    while(!userInput.equals("exit")){
       userInput = input.nextLine();
-      if(userInput.equals("exit") == false){
+      if(!userInput.equals("exit")){
         independent.add(userInput);
       }
     }
@@ -58,16 +59,16 @@ public class Main {
     System.out.println(analysis(independent, independentType, dependent, dependentType, allData, true));
   }
   
-  public static ArrayList<DataEntry> readNewData(){
+  private static ArrayList<DataEntry> readNewData(){
     Scanner input1 = null;
     Scanner input2 = null;
-    File uniFile = null;
-    File collegeFile = null;
-    String row = "";
+    File uniFile;
+    File collegeFile;
+    String row;
     boolean status = false;
-    String school = "";
-    String programName = "";
-    String programCode = "";
+    String school;
+    String programName;
+    String programCode;
     ArrayList<String> tags = new ArrayList<String>();    
     ArrayList<DataEntry> allData = new ArrayList<DataEntry>();
     ArrayList<DataEntry> acceptedData = new ArrayList<DataEntry>();
@@ -89,40 +90,32 @@ public class Main {
     
     //reading college file
     input1.nextLine(); //skip header row;
-    while(input1.hasNext() == true){
+    while(input1.hasNext()){
       row = input1.nextLine();
-      if(row.indexOf(",") == 0){ //determines accepted status of colleges
-        status = false;
-        row = row.substring(row.indexOf(",") + 1);
-      }else if (row.indexOf("A") ==0){
-        status = true;
-        row = row.substring(row.indexOf(",") + 1);
+      ArrayList<String> rowList = new ArrayList<>();
+
+      //Iterates through the row and makes sure we're only splitting on commas not part of quotes
+      boolean inElement = false;
+      int startIndex = 0;
+      for (int i = 0; i < row.length(); i++) {
+          char c = row.charAt(i);
+          //Split on this comma
+          if (!inElement && c == ',') {
+              rowList.add(row.substring(startIndex, i));
+              startIndex = i + 1;
+          //Quotes start here, ignore everything until the next quote
+          } else if (!inElement && c == '"') {
+              inElement = true;
+          //Quotes end here, we can start reading commas again
+          } else if (inElement && c == '"') {
+              inElement = false;
+          }
       }
-      
-      if(row.indexOf("\"") == 0){ //saving school, check if there are commas
-        row = row.substring(1);
-        school = row.substring(0, row.indexOf("\"")); 
-        row = row.substring(row.indexOf("\"") + 2);
-      }else{
-        school = row.substring(0, row.indexOf(",")); 
-        row = row.substring(row.indexOf(",") + 1); 
-      }
-      if(row.indexOf("\"") == 0){ //saving program code, check if there are commas
-        row = row.substring(1);
-        programCode = row.substring(0, row.indexOf("\"")); 
-        row = row.substring(row.indexOf("\"") + 2);
-      }else{
-        programCode = row.substring(0, row.indexOf(","));
-        row = row.substring(row.indexOf(",") + 1);
-      }
-      if(row.indexOf("\"") == 0){//saving program name, check if there are commas
-        row = row.substring(1);
-        programName = row.substring(0, row.indexOf("\"")); 
-        row = row.substring(row.indexOf("\"") + 2);
-      }else{
-        programName = row.substring(0, row.indexOf(","));
-        row = row.substring(row.indexOf(",") + 1);
-      }
+
+      status = rowList.get(0).equals("A");
+      school = rowList.get(1);
+      programCode = rowList.get(2);
+      programName = rowList.get(3);
       //tags = tagger.getTags(programCode, programName);
       
       allData.add(new DataEntry(status, school, programName, programCode, new ArrayList<String>())); 
@@ -130,37 +123,33 @@ public class Main {
     
     //Reading universities file
     input2.nextLine(); //skip header row
-    while(input2.hasNext() == true){
+    while(input2.hasNext()){
       row = input2.nextLine();
-      
-      if(row.indexOf("\"") == 0){ //saving school, check if there are commas
-        school = row.substring(1, row.indexOf("\"")); 
-        row = row.substring(row.indexOf(",") + 1);
-      }else{
-        school = row.substring(0, row.indexOf(",")); 
-        row = row.substring(row.indexOf(",") + 1); 
-      }
-      if(row.indexOf("\"") == 0){ //saving program code, check if there are commas
-        programCode = row.substring(1, row.indexOf(" - ")); 
-        row = row.substring(row.indexOf(" - ") + 3);
-      }else{
-        programCode = row.substring(0, row.indexOf(" - "));
-        row = row.substring(row.indexOf(" - ") + 3);
-      }
-      if(row.indexOf("\"") != -1){ //saving program name, check if there are commas
-        programName = row.substring(0, row.indexOf("\"")); 
-        row = row.substring(row.indexOf("\"") + 1);
-      }else{
-        programName = row.substring(0, row.indexOf(",")); 
-        row = row.substring(row.indexOf(",") + 1);
-      }
-      row = row.substring(row.indexOf(",") + 1); //disregard entry point
-      if(row.indexOf(",") == 0){ //saving status, comma at zero means cell is blank
-        status = false;
-      }else{
-        status = true;
-      }
-      
+        ArrayList<String> rowList = new ArrayList<>();
+
+        //Iterates through the row and makes sure we're only splitting on commas not part of quotes
+        boolean inElement = false;
+        int startIndex = 0;
+        for (int i = 0; i < row.length(); i++) {
+            char c = row.charAt(i);
+            //Split on this comma
+            if (!inElement && c == ',') {
+                rowList.add(row.substring(startIndex, i));
+                startIndex = i + 1;
+                //Quotes start here, ignore everything until the next quote
+            } else if (!inElement && c == '"') {
+                inElement = true;
+                //Quotes end here, we can start reading commas again
+            } else if (inElement && c == '"') {
+                inElement = false;
+            }
+        }
+
+        school = rowList.get(0);
+        programName = rowList.get(1);
+        status = !rowList.get(2).equals("0");
+        programCode = "";
+
       //tags = tagger.getTags(programCode, programName); //add tags
       
       allData.add(new DataEntry(status, school, programName, programCode, tags)); 
@@ -258,7 +247,7 @@ public class Main {
     File storage = null; 
     PrintWriter output = null;
     try{ //load files and create PrintWriter
-      storage = new File("storage.csv");
+      storage = new File("res/storage.csv");
       output = new PrintWriter(storage);
     }catch(FileNotFoundException e){
       System.out.println("File not found");
