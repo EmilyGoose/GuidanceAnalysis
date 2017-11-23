@@ -294,24 +294,62 @@ public class Main {
     output.close(); //close PrintWriter
   }
   
+  public ArrayList<Integer> compareSchools (ArrayList<DataEntry> data, ArrayList<String> schools){
+    ArrayList<Integer> schoolCount = new ArrayList<Integer>();
+    
+    for(int i = 0; i < schools.size(); i ++){
+      schoolCount.add(0);
+    }
+    
+    for(int j = 0; j < schools.size(); j ++){
+      for(int k = 0; k < data.size(); k ++){
+        if(data.get(k).getSchool().equals(schools.get(j))){
+          schoolCount.set(j, schoolCount.get(j) + 1);
+        }
+      }
+    }
+    return schoolCount;
+  }
+  
   public ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns ArrayList of unique schools
     ArrayList<String> schools = new ArrayList<String>();
     for(int i = 0; i < data.size(); i ++){
-      if(schools.indexOf(data.get(i).getSchool()) != -1){
-        schools.add(data.get(i).getSchool());
+      if(schools.indexOf(data.get(i).getSchool()) == -1){
+        schools.add(data.get(i).getSchool()); //add if school isn't in the schools ArrayList
       }
     }
     return schools;
   }
   
-  public ArrayList<String> getAllProgramNames(ArrayList<DataEntry> data){ //returns ArrayList of unique program names
-    ArrayList<String> programNames = new ArrayList<String>();
-    for(int i = 0; i < data.size(); i ++){
-      if(programNames.indexOf(data.get(i).getProgramName()) != -1){
-        programNames.add(data.get(i).getProgramName());
+  public ArrayList<Integer> compareTags (ArrayList<DataEntry> data, ArrayList<String> tags){ 
+    ArrayList<Integer> tagCount = new ArrayList<Integer>();
+    
+    for(int i = 0; i < tags.size(); i ++){ //initialize an ArrayList with the same length as tags
+      tagCount.add(0);
+    }
+    
+    for(int j = 0; j < tags.size(); j ++){
+      for(int k = 0; k < data.size(); k ++){
+        for(int m = 0; m < data.get(k).getTags().size(); k ++){
+          if(data.get(k).getTags().get(k).equals(tags.get(j))){
+            tagCount.set(j, tagCount.get(j) + 1); //add to the corresponding ArrayList entry if there is an instance
+          }
+        }
       }
     }
-    return programNames;
+    return tagCount;
+  }
+  
+  public ArrayList<String> getAllTags(ArrayList<DataEntry> data){ //returns ArrayList of unique tags
+    ArrayList<String> tags = new ArrayList<String>();
+    for(int i = 0; i < data.size(); i ++){ //loop through data and each DataEntry's tags
+      for(int j = 0; j < data.get(i).getTags().size(); j ++){
+        if(tags.indexOf(data.get(i).getTags().get(j)) == -1){
+          tags.add(data.get(i).getTags().get(j)); //add if specific tag isn't in the tags ArrayList
+        }
+      }
+    }
+    return tags;
   }
 }
 
