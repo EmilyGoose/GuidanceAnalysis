@@ -26,20 +26,6 @@ public class Main {
       }
     }
     
-   //___________________TEMPORARY CONSOLE ANALYSIS METHOD TESTING UNTIL GUI MADE______________________
-    System.out.println("Please enter the type of the dependent variable (\"Tags\" or \"AcceptedStatus\")");
-    dependentType = input.nextLine();
-    
-    if(dependentType.equals("Tags")){
-      System.out.println("Please enter the Tags to be searched. Type \"exit\" when done.");
-      while(!userInput.equals("exit")){
-        userInput = input.nextLine();
-        if(!userInput.equals("exit")){
-          dependent.add(userInput);
-        }
-      }
-    }
-    
     userInput = "";
     
     if(dependentType.equals("Tags")){
@@ -160,86 +146,34 @@ public class Main {
     return allData;
   }
   
-  public static ArrayList<Integer> analysis(ArrayList<String> independent, String independentType, ArrayList<String> dependent, String dependentType, ArrayList<DataEntry> data, boolean and){
-    ArrayList<Integer> percentages = new ArrayList<Integer>(); 
-    int[] countArray = new int[independent.size()];
+  public static ArrayList<Integer> analysis(ArrayList<String> independent, ArrayList<String> dependent, ArrayList<DataEntry> data){
+    ArrayList<Integer> count = new ArrayList<Integer>(); 
     ArrayList<DataEntry> matchData = new ArrayList<DataEntry>();
-    boolean exit = false;
-    int matchCount  = 0;
-    
-    for(int i = 0; i < countArray.length; i ++){
-      countArray[i] = 0;
+
+    for(int p = 0; p < independent.size(); p ++){
+      count.add(0);
     }
     
-    if(dependentType.equals("Tags") && independentType.equals("School")){ 
-      for(int i = 0; i < independent.size(); i ++){ //loop through all the independent variables and add data entries that fit into an ArrayList
-        for(int j = 0; j < data.size(); j ++){
-          if(data.get(j).getSchool().equals(independent.get(i))){
-            matchData.add(data.get(j));
-          }
+    for(int i = 0; i < data.size(); i ++){
+      for(int j = 0; j < independent.size(); j ++){ //add data that fits the independent variable to new arraylist
+        if(data.get(i).getCombinedTraits().indexOf(independent.get(j)) != -1){
+          matchData.add(data.get(i));
         }
       }
-      
-      if(!and){ //or option selected, returns data that has one or more of the tags
-        for(int i = 0; i < matchData.size(); i ++){ //loop through the matchData and check for tags that match
-          exit = false;
-          for(int j = 0; j < dependent.size() && !exit; j ++){
-            for(int k = 0; k < matchData.get(i).getTags().size() && !exit; k ++){
-              if(dependent.get(j).equals(matchData.get(i).getTags().get(k))){
-                for(int m = 0; m < independent.size() && !exit; m ++){
-                  if(independent.get(m).equals(matchData.get(i).getSchool())){
-                    countArray[m] = countArray[m] + 1;
-                    exit = true;
-                    matchCount++;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }else if(and){ //and option selected
-        for(int i = 0; i < matchData.size(); i ++){ //loop through the matchData and check for tags that match
-          exit = false;
-          for(int j = 0; j < dependent.size(); j ++){
-            if(matchData.get(i).getTags().indexOf(dependent.get(j)) == -1){
-              exit = true;
-            }
-          }
-          if(!exit){ //if all the tags in the dependent are found in one of the data entries add to the count
-            for(int m = 0; m < independent.size(); m ++){
-              if(independent.get(m).equals(matchData.get(i).getSchool())){
-                countArray[m] = countArray[m] + 1;
-                matchCount++;
-              }
-            }
-          }
-        }
-      }
-      
-      }else if(dependentType.equals("AcceptedStatus") && independentType.equals("School")){
-      for(int i = 0; i < independent.size(); i ++){ //loop through all the independent variables and add data entries that fit into an ArrayList
-        for(int j = 0; j < data.size(); j ++){
-          if(data.get(j).getSchool().equals(independent.get(i))){
-            matchData.add(data.get(j));
-          }
-        }
-      }  
-      for(int i = 0; i < matchData.size(); i ++){
-        if(matchData.get(i).getStatus()){
-          for(int m = 0; m < independent.size(); m ++){//Remove after adding GUI, pass in acceptedData instead
-            if(independent.get(m).equals(matchData.get(i).getSchool())){//add to count corresponding with school if it is accepted
-              countArray[m] = countArray[m] + 1;
-              matchCount++;
+    }
+    
+    for(int a = 0; a < matchData.size(); a ++){
+      for(int b = 0; b < dependent.size(); b ++){ //compare data that matches independent variable to dependent variable
+        if(matchData.get(a).getCombinedTraits().indexOf(dependent.get(b)) != -1){
+          for(int c = 0; c < independent.size(); c ++){
+            if(matchData.get(a).getCombinedTraits().indexOf(independent.get(c)) != -1){ //add to count in corresponding arraylist index
+              count.set(c, count.get(c) + 1);
             }
           }
         }
       }
     }
-    
-    for(int a = 0; a < countArray.length; a ++){ //changing each count to a percentage
-      percentages.add((int)(Math.round(countArray[a]*100.0/matchCount)));
-    }
-    return percentages; //returning percentages
+    return count;
   }
   
   
