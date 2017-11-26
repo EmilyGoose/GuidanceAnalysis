@@ -25,24 +25,6 @@ public class Main {
         acceptedData.add(entry);
       }
     }
-    
-    userInput = "";
-    
-    if(dependentType.equals("Tags")){
-      independentType = "School";
-    }else if(dependentType.equals("AcceptedStatus")){
-      independentType = "School";
-    }
-    
-    System.out.println("Please enter the Schools you would like to filter by. Type \"exit\" when done.");
-    while(!userInput.equals("exit")){
-      userInput = input.nextLine();
-      if(!userInput.equals("exit")){
-        independent.add(userInput);
-      }
-    }
-    
-    System.out.println(analysis(independent, independentType, dependent, dependentType, allData, true));
   }
   
   private static ArrayList<DataEntry> readNewData(){
@@ -60,10 +42,6 @@ public class Main {
     ArrayList<DataEntry> acceptedData = new ArrayList<DataEntry>();
     FileChooser fileChoose = new FileChooser();
     Tagger tagger = new Tagger();
-    
-    //testing
-    tags.add("Engineering");
-    tags.add("Math");
     
     try{ //load files and create scanners, return error message if there is an error
       uniFile = fileChoose.getFile("University");
@@ -136,7 +114,7 @@ public class Main {
         status = rowList.get(3).length() > 0;;
         programCode = "";
 
-      //tags = tagger.getTags(programCode, programName); //add tags
+      tags = tagger.getTags(programCode, programName); //add tags
       
       allData.add(new DataEntry(status, school, programName, programCode, tags)); 
     }  
@@ -228,23 +206,6 @@ public class Main {
     output.close(); //close PrintWriter
   }
   
-  public ArrayList<Integer> compareSchools (ArrayList<DataEntry> data, ArrayList<String> schools){
-    ArrayList<Integer> schoolCount = new ArrayList<Integer>();
-    
-    for(int i = 0; i < schools.size(); i ++){
-      schoolCount.add(0);
-    }
-    
-    for(int j = 0; j < schools.size(); j ++){
-      for(int k = 0; k < data.size(); k ++){
-        if(data.get(k).getSchool().equals(schools.get(j))){
-          schoolCount.set(j, schoolCount.get(j) + 1);
-        }
-      }
-    }
-    return schoolCount;
-  }
-  
   public ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns ArrayList of unique schools
     ArrayList<String> schools = new ArrayList<String>();
     for(int i = 0; i < data.size(); i ++){
@@ -253,25 +214,6 @@ public class Main {
       }
     }
     return schools;
-  }
-  
-  public ArrayList<Integer> compareTags (ArrayList<DataEntry> data, ArrayList<String> tags){ 
-    ArrayList<Integer> tagCount = new ArrayList<Integer>();
-    
-    for(int i = 0; i < tags.size(); i ++){ //initialize an ArrayList with the same length as tags
-      tagCount.add(0);
-    }
-    
-    for(int j = 0; j < tags.size(); j ++){
-      for(int k = 0; k < data.size(); k ++){
-        for(int m = 0; m < data.get(k).getTags().size(); k ++){
-          if(data.get(k).getTags().get(k).equals(tags.get(j))){
-            tagCount.set(j, tagCount.get(j) + 1); //add to the corresponding ArrayList entry if there is an instance
-          }
-        }
-      }
-    }
-    return tagCount;
   }
   
   public ArrayList<String> getAllTags(ArrayList<DataEntry> data){ //returns ArrayList of unique tags
