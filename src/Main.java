@@ -37,6 +37,7 @@ public class Main {
     String school;
     String programName;
     String programCode;
+    String combinedTraits; //String holding all the traits (all the programs, tags, school etc)
     ArrayList<String> tags = new ArrayList<String>();    
     ArrayList<DataEntry> allData = new ArrayList<DataEntry>();
     ArrayList<DataEntry> acceptedData = new ArrayList<DataEntry>();
@@ -57,109 +58,86 @@ public class Main {
     while(input1.hasNext()){
       row = input1.nextLine();
       ArrayList<String> rowList = new ArrayList<>();
-
+      
       //Iterates through the row and makes sure we're only splitting on commas not part of quotes
       boolean inElement = false;
       int startIndex = 0;
       for (int i = 0; i < row.length(); i++) {
-          char c = row.charAt(i);
-          //Split on this comma
-          if (!inElement && c == ',') {
-              rowList.add(row.substring(startIndex, i));
-              startIndex = i + 1;
+        char c = row.charAt(i);
+        //Split on this comma
+        if (!inElement && c == ',') {
+          rowList.add(row.substring(startIndex, i));
+          startIndex = i + 1;
           //Quotes start here, ignore everything until the next quote
-          } else if (!inElement && c == '"') {
-              inElement = true;
+        } else if (!inElement && c == '"') {
+          inElement = true;
           //Quotes end here, we can start reading commas again
-          } else if (inElement && c == '"') {
-              inElement = false;
-          }
+        } else if (inElement && c == '"') {
+          inElement = false;
+        }
       }
-
+      
       status = rowList.get(0).equals("A");
       school = rowList.get(1);
       programCode = rowList.get(2);
       programName = rowList.get(3);
-      //tags = tagger.getTags(programCode, programName);
+      tags = tagger.getTags(programCode, programName);
+      combinedTraits = status + ", " + school + ", " + programCode + ", " + programName; 
       
-      allData.add(new DataEntry(status, school, programName, programCode, new ArrayList<String>())); 
+      for(int i = 0; i < tags.size(); i ++){ //adding all tags to combinedTraits
+       combinedTraits += ", " + tags.get(i);
+      }
+      
+      allData.add(new DataEntry(status, school, programName, programCode, tags, combinedTraits)); //replace arraylist with tags after testing
     }
     
     //Reading universities file
     input2.nextLine(); //skip header row
     while(input2.hasNext()){
       row = input2.nextLine();
-        ArrayList<String> rowList = new ArrayList<>();
-
-        //Iterates through the row and makes sure we're only splitting on commas not part of quotes
-        boolean inElement = false;
-        int startIndex = 0;
-        for (int i = 0; i < row.length(); i++) {
-            char c = row.charAt(i);
-            //Split on this comma
-            if (!inElement && c == ',') {
-                rowList.add(row.substring(startIndex, i));
-                startIndex = i + 1;
-                //Quotes start here, ignore everything until the next quote
-            } else if (!inElement && c == '"') {
-                inElement = true;
-                //Quotes end here, we can start reading commas again
-            } else if (inElement && c == '"') {
-                inElement = false;
-            }
-        }
-
-        school = rowList.get(0);
-        programName = rowList.get(1);
-        status = rowList.get(3).length() > 0;;
-        programCode = "";
-
-      tags = tagger.getTags(programCode, programName); //add tags
+      ArrayList<String> rowList = new ArrayList<>();
       
-      allData.add(new DataEntry(status, school, programName, programCode, tags)); 
+      //Iterates through the row and makes sure we're only splitting on commas not part of quotes
+      boolean inElement = false;
+      int startIndex = 0;
+      for (int i = 0; i < row.length(); i++) {
+        char c = row.charAt(i);
+        //Split on this comma
+        if (!inElement && c == ',') {
+          rowList.add(row.substring(startIndex, i));
+          startIndex = i + 1;
+          //Quotes start here, ignore everything until the next quote
+        } else if (!inElement && c == '"') {
+          inElement = true;
+          //Quotes end here, we can start reading commas again
+        } else if (inElement && c == '"') {
+          inElement = false;
+        }
+      }
+      
+      school = rowList.get(0);
+      programName = rowList.get(1);
+      status = rowList.get(3).length() > 0;
+      programCode = "";
+      tags = tagger.getTags(programCode, programName); //add tags
+      combinedTraits = status + ", " + school + ", " + programCode + ", " + programName;
+      
+      for(int i = 0; i < tags.size(); i ++){ //adding all tags to combinedTraits
+        combinedTraits += ", " + tags.get(i);
+      }     
+      allData.add(new DataEntry(status, school, programName, programCode, tags, combinedTraits)); 
     }  
     input1.close();
     input2.close();
     writeToFile(acceptedData); //write data to CSV file
     return allData;
-  }
-  
-  public static ArrayList<Integer> analysis(ArrayList<String> independent, ArrayList<String> dependent, ArrayList<DataEntry> data){
-    ArrayList<Integer> count = new ArrayList<Integer>(); 
-    ArrayList<DataEntry> matchData = new ArrayList<DataEntry>();
-
-    for(int p = 0; p < independent.size(); p ++){
-      count.add(0);
-    }
-    
-    for(int i = 0; i < data.size(); i ++){
-      for(int j = 0; j < independent.size(); j ++){ //add data that fits the independent variable to new arraylist
-        if(data.get(i).getCombinedTraits().indexOf(independent.get(j)) != -1){
-          matchData.add(data.get(i));
-        }
-      }
-    }
-    
-    for(int a = 0; a < matchData.size(); a ++){
-      for(int b = 0; b < dependent.size(); b ++){ //compare data that matches independent variable to dependent variable
-        if(matchData.get(a).getCombinedTraits().indexOf(dependent.get(b)) != -1){
-          for(int c = 0; c < independent.size(); c ++){
-            if(matchData.get(a).getCombinedTraits().indexOf(independent.get(c)) != -1){ //add to count in corresponding arraylist index
-              count.set(c, count.get(c) + 1);
-            }
-          }
-        }
-      }
-    }
-    return count;
-  }
-  
+  }  
   
   public static void writeToFile(ArrayList<DataEntry> data){
     File storage = null; 
     PrintWriter output = null;
     try{ //load files and create PrintWriter
-      storage = new File("res/storage.csv");
+      storage = new File("storage.csv");
       output = new PrintWriter(storage);
     }catch(FileNotFoundException e){
       System.out.println("File not found");
@@ -206,7 +184,38 @@ public class Main {
     output.close(); //close PrintWriter
   }
   
-  public ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns ArrayList of unique schools
+  public static ArrayList<Integer> analysis(ArrayList<String> independent, ArrayList<String> dependent, ArrayList<DataEntry> data){
+    ArrayList<Integer> count = new ArrayList<Integer>(); 
+    ArrayList<DataEntry> matchData = new ArrayList<DataEntry>();
+    
+    for(int p = 0; p < independent.size(); p ++){ 
+      count.add(0);
+    }
+    
+    for(int i = 0; i < data.size(); i ++){
+      for(int j = 0; j < independent.size(); j ++){ //add data that fits the independent variable to new arraylist
+        if(data.get(i).getCombinedTraits().indexOf(independent.get(j)) != -1){
+          matchData.add(data.get(i));
+        }
+      }
+    }
+    //compare data that matches independent variable to see if it matches the dependent variable
+    for(int a = 0; a < matchData.size(); a ++){
+      for(int b = 0; b < dependent.size(); b ++){ 
+        if(matchData.get(a).getCombinedTraits().indexOf(dependent.get(b)) != -1){
+          for(int c = 0; c < independent.size(); c ++){
+            if(matchData.get(a).getCombinedTraits().indexOf(independent.get(c)) != -1){ //add to count in corresponding arraylist index
+              count.set(c, count.get(c) + 1);
+            }
+          }
+        }
+      }
+    }
+    return count;
+  }
+  
+  
+  public static ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns ArrayList of unique schools
     ArrayList<String> schools = new ArrayList<String>();
     for(int i = 0; i < data.size(); i ++){
       if(schools.indexOf(data.get(i).getSchool()) == -1){
@@ -216,7 +225,8 @@ public class Main {
     return schools;
   }
   
-  public ArrayList<String> getAllTags(ArrayList<DataEntry> data){ //returns ArrayList of unique tags
+  
+  public static ArrayList<String> getAllTags(ArrayList<DataEntry> data){ //returns ArrayList of unique tags
     ArrayList<String> tags = new ArrayList<String>();
     for(int i = 0; i < data.size(); i ++){ //loop through data and each DataEntry's tags
       for(int j = 0; j < data.get(i).getTags().size(); j ++){
@@ -228,4 +238,3 @@ public class Main {
     return tags;
   }
 }
-
