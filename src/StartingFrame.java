@@ -15,8 +15,9 @@ import javax.swing.JTextField;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+	import java.util.ArrayList;
 
-import javax.swing.SwingUtilities;
+	import javax.swing.SwingUtilities;
 import javax.swing.BoxLayout;
 
 	class StartingFrame extends JFrame { 
@@ -81,11 +82,22 @@ import javax.swing.BoxLayout;
 	  //This is an inner class that is used to detect a button press
 	 class BrowseButtonListener implements ActionListener {  
 	    public void actionPerformed(ActionEvent event)  {
-	      
+
+	    	ArrayList<DataEntry> data = Analysis.readNewData();
+	    	ArrayList<Integer> percentages = Analysis.analysis(Analysis.getAllSchools(data), Analysis.getAllTags(data), data);
+	    	JFrame main = new JFrame("Data");
+	    	PieChart pie = new PieChart();
+	    	for (int i = 0; i < Analysis.getAllSchools(data).size(); i++) {
+	    		pie.addToData(Analysis.getAllSchools(data).get(i), percentages.get(i));
+			}
+			main.add(pie);
+	    	main.setSize(1920,1080);
+	    	pie.setVisible(true);
+	    	main.setVisible(true);
 //	      JFrame browseFrame= new JFrame("Browse");
 //	      browseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	      JPanel main = new JPanel();
+//	      JPanel main = new JPanel();
 
 //	      JPanel datePanel = new JPanel();
 //	      JLabel dateLabel = new JLabel("Year of admissions: ", JLabel.RIGHT);
@@ -93,9 +105,9 @@ import javax.swing.BoxLayout;
 //	      datePanel.add(dateLabel);
 //	      datePanel.add(dateField);
 
-			FileChooser fc = new FileChooser();
-	      main.add(fc);
-	      fc.getFile("college"); //todo: do something with the file
+//		  FileChooser fc = new FileChooser();
+//	      main.add(fc);
+//	      fc.getFile("college"); //todo: do something with the file
 	      //main.add(datePanel);
 //	      browseFrame.add(main);
 //	      browseFrame.pack();
