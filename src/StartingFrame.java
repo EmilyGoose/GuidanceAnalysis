@@ -93,6 +93,7 @@ import javax.swing.BoxLayout;
 			main.add(pie);
 	    	main.setSize(1920,1080);
 	    	pie.setVisible(true);
+	    	main.pack();
 	    	main.setVisible(true);
 //	      JFrame browseFrame= new JFrame("Browse");
 //	      browseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
