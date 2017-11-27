@@ -20,26 +20,21 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 public class AddTags extends JFrame implements ListSelectionListener {
+
+ private String programCode;
+ private String programTitle;
+ private String uniColl;
+ private String[] programTags;
+ private ArrayList<String> allTags = new ArrayList<>();
+ private ArrayList<String> newTags = new ArrayList<>();
  
- String programCode;
- String programTitle;
- String uniColl;
- String[] programTags;
- ArrayList<String> allTags = new ArrayList<>();
- ArrayList<String> newTags = new ArrayList<>();
+ private JFrame thisFrame;
+ private JList list;
+ private DefaultListModel listModel;
+ private JButton removeButton;
+ private JTextField tagField;
  
- JFrame thisFrame;
- JTextField textField;
- JList list;
- DefaultListModel listModel;
- String newLine = "\n";
- JButton addButton;
- JButton removeButton;
- JButton finishButton;
- JButton exitButton;
- JTextField tagField;
- 
- AddTags(String programCode, String programTitle, String uniColl, String[] programTags, ArrayList<String> allTags){
+ private AddTags(String programCode, String programTitle, String uniColl, String[] programTags, ArrayList<String> allTags){
   super("Edit Tags");
   
   //creating frame and adding features
@@ -76,7 +71,7 @@ public class AddTags extends JFrame implements ListSelectionListener {
         listScrollPane.setPreferredSize(d);
         
         //add button creation and adding to actionListener
-        addButton = new JButton("Add Tag: ");
+        JButton addButton = new JButton("Add Tag: ");
         AddListener addListener = new AddListener(addButton);
         addButton.setActionCommand("Add Tag:");
         addButton.addActionListener(addListener);
@@ -94,11 +89,11 @@ public class AddTags extends JFrame implements ListSelectionListener {
         String thisTag = listModel.getElementAt(list.getSelectedIndex()).toString();
         
         //finish button
-        finishButton = new JButton ("Save and Finish");
+        JButton finishButton = new JButton("Save and Finish");
         finishButton.addActionListener(new FinishListener());
         
         //exit button
-        exitButton = new JButton("Exit");
+        JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(new ExitListener());
         
         //info panel: has program code and name and university
