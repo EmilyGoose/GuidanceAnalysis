@@ -8,26 +8,8 @@ import java.io.PrintWriter;
 import java.lang.StringBuilder;
 
 public class Main {
-  public static void main(String args[]){
-    ArrayList<DataEntry> allData;
-    ArrayList<DataEntry> acceptedData = new ArrayList<DataEntry>();
-    ArrayList<String> dependent = new ArrayList<String>();
-    String dependentType;
-    ArrayList<String> independent = new ArrayList<String>();
-    String independentType = "";
-    String userInput = "";
-    
-    Scanner input = new Scanner(System.in);
-    
-    allData = readNewData();
-    for(DataEntry entry : allData){
-      if(entry.getStatus()){
-        acceptedData.add(entry);
-      }
-    }
-  }
   
-  private static ArrayList<DataEntry> readNewData(){
+  public static ArrayList<DataEntry> readNewData(){
     Scanner input1 = null;
     Scanner input2 = null;
     File uniFile;
@@ -81,13 +63,12 @@ public class Main {
       school = rowList.get(1);
       programCode = rowList.get(2);
       programName = rowList.get(3);
-      tags = tagger.getTags(programCode, programName);
+      //tags = tagger.getTags(programCode, programName);
       combinedTraits = status + ", " + school + ", " + programCode + ", " + programName; 
       
       for(int i = 0; i < tags.size(); i ++){ //adding all tags to combinedTraits
        combinedTraits += ", " + tags.get(i);
       }
-      
       allData.add(new DataEntry(status, school, programName, programCode, tags, combinedTraits)); //replace arraylist with tags after testing
     }
     
@@ -119,7 +100,7 @@ public class Main {
       programName = rowList.get(1);
       status = rowList.get(3).length() > 0;
       programCode = "";
-      tags = tagger.getTags(programCode, programName); //add tags
+      //tags = tagger.getTags(programCode, programName); //add tags
       combinedTraits = status + ", " + school + ", " + programCode + ", " + programName;
       
       for(int i = 0; i < tags.size(); i ++){ //adding all tags to combinedTraits
@@ -129,8 +110,14 @@ public class Main {
     }  
     input1.close();
     input2.close();
+    
+    for(DataEntry entry : allData){
+        if(entry.getStatus()){
+          acceptedData.add(entry);
+        }
+      }
     writeToFile(acceptedData); //write data to CSV file
-    return allData;
+    return acceptedData;
   }  
   
   public static void writeToFile(ArrayList<DataEntry> data){
@@ -238,3 +225,4 @@ public class Main {
     return tags;
   }
 }
+
