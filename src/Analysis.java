@@ -201,6 +201,15 @@ public class Analysis {
     return count;
   }
   
+  public static int totalEntries(ArrayList<Integer> count){
+	  int totalEntries = 0;
+	  for(int i = 0; i < count.size(); i ++){
+		  totalEntries += count.get(i);
+	  }
+	  return totalEntries;
+  }
+
+  
   
   public static ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns ArrayList of unique schools
     ArrayList<String> schools = new ArrayList<String>();
