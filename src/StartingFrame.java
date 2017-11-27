@@ -80,25 +80,26 @@ import javax.swing.BoxLayout;
 	  
 	  //This is an inner class that is used to detect a button press
 	 class BrowseButtonListener implements ActionListener {  
-	    public void actionPerformed(ActionEvent event)  {  
-	      thisFrame.dispose();
+	    public void actionPerformed(ActionEvent event)  {
 	      
-	      JFrame browseFrame= new JFrame("Browse"); 
-	      browseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	      
+//	      JFrame browseFrame= new JFrame("Browse");
+//	      browseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 	      JPanel main = new JPanel();
-	      
-	      JPanel datePanel = new JPanel();
-	      JLabel dateLabel = new JLabel("Year of admissions: ", JLabel.RIGHT);
-	      JTextField dateField = new JTextField(8);
-	      datePanel.add(dateLabel);
-	      datePanel.add(dateField);
-	      
-	      main.add(new FileChooser());
-	      main.add(datePanel);
-	      browseFrame.add(main);
-	      browseFrame.pack();
-	      browseFrame.setVisible(true);
+
+//	      JPanel datePanel = new JPanel();
+//	      JLabel dateLabel = new JLabel("Year of admissions: ", JLabel.RIGHT);
+//	      JTextField dateField = new JTextField(8);
+//	      datePanel.add(dateLabel);
+//	      datePanel.add(dateField);
+
+			FileChooser fc = new FileChooser();
+	      main.add(fc);
+	      fc.getFile("college"); //todo: do something with the file
+	      //main.add(datePanel);
+//	      browseFrame.add(main);
+//	      browseFrame.pack();
+//	      browseFrame.setVisible(true);
 	    }
 
 	  }

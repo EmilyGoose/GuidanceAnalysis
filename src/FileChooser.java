@@ -18,6 +18,7 @@ public class FileChooser extends JPanel{
     
     FileChooser(){
     	super(new BorderLayout());
+
     }
 
     public File getFile(String schoolType) {
