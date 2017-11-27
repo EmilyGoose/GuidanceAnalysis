@@ -41,8 +41,6 @@ public class PieChart extends JPanel {
         //HashMap for mapping keys to colors (to make a legend)
         colors = new HashMap<>();
 
-        System.out.println("aaa");
-
         //Set up a system that guarantees unique color across the whole spectrum
         int colorStep = (Integer.parseInt("FFFFFF", 16) - 255) / data.size();
         //This is the minimum color so that we don't have black as a possible value
