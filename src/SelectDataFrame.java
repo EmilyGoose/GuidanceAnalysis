@@ -17,14 +17,12 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Font;
 
-import javax.swing.SwingUtilities;
-
 import java.util.ArrayList;
 
 class SelectDataFrame extends JFrame { 
   
   JFrame thisFrame;
-  Main test = new Main();
+  Analysis test = new Analysis();
   ArrayList<String> dependent = new ArrayList<String>();
   ArrayList<String> independent = new ArrayList<String>();
   ArrayList<DataEntry> data;
@@ -118,7 +116,7 @@ class SelectDataFrame extends JFrame {
      }
   }
    
-   //Main method starts this application
+   //Analysis method starts this application
    public static void main(String[] args) { 
      new SelectDataFrame();
 

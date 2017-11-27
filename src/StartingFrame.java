@@ -116,7 +116,7 @@ import javax.swing.BoxLayout;
 	 }
 	  
 	  
-	  //Main method starts this application
+	  //Analysis method starts this application
 	  public static void main(String[] args) { 
 	    new StartingFrame();
 
