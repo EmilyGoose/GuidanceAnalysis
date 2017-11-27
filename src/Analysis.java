@@ -201,12 +201,19 @@ public class Analysis {
     return count;
   }
   
-  public static int totalEntries(ArrayList<Integer> count){
-	  int totalEntries = 0;
-	  for(int i = 0; i < count.size(); i ++){
-		  totalEntries += count.get(i);
-	  }
-	  return totalEntries;
+  //used in conjunction with the analysis method, returns percent versions
+  public static ArrayList<Integer> getPercentages(ArrayList<Integer> count){
+    int totalEntries = 0;
+    ArrayList<Integer> percentages = new ArrayList<Integer>();
+    
+    for(int i = 0; i < count.size(); i ++){
+      totalEntries += count.get(i);
+    }
+    
+    for(int j = 0; j < count.size(); j ++){
+    percentages.add((int)(count.get(j)*100.0/(double)totalEntries));
+    }
+    return percentages;
   }
 
   
