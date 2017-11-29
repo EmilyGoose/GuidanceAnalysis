@@ -9,7 +9,7 @@ import java.lang.StringBuilder;
 
 public class Analysis {
   
-  public static ArrayList<DataEntry> readNewData(){
+  public static ArrayList<DataEntry> readNewData(int year){
     Scanner input1 = null;
     Scanner input2 = null;
     File uniFile;
@@ -64,12 +64,12 @@ public class Analysis {
       programCode = rowList.get(2);
       programName = rowList.get(3);
       //tags = tagger.getTags(programCode, programName);
-      combinedTraits = status + ", " + school + ", " + programCode + ", " + programName; 
+      combinedTraits = status + ", " + school + ", " + programCode + ", " + programName + ", " + year; 
       
       for(int i = 0; i < tags.size(); i ++){ //adding all tags to combinedTraits
-       combinedTraits += ", " + tags.get(i);
+        combinedTraits += ", " + tags.get(i);
       }
-      allData.add(new DataEntry(status, school, programName, programCode, tags, combinedTraits)); //replace arraylist with tags after testing
+      allData.add(new DataEntry(status, school, programName, programCode, tags, combinedTraits, year));
     }
     
     //Reading universities file
@@ -101,21 +101,21 @@ public class Analysis {
       status = rowList.get(3).length() > 0;
       programCode = "";
       //tags = tagger.getTags(programCode, programName); //add tags
-      combinedTraits = status + ", " + school + ", " + programCode + ", " + programName;
+      combinedTraits = status + ", " + school + ", " + programCode + ", " + programName + ", " + year;
       
       for(int i = 0; i < tags.size(); i ++){ //adding all tags to combinedTraits
         combinedTraits += ", " + tags.get(i);
       }     
-      allData.add(new DataEntry(status, school, programName, programCode, tags, combinedTraits)); 
+      allData.add(new DataEntry(status, school, programName, programCode, tags, combinedTraits, year)); 
     }  
     input1.close();
     input2.close();
     
     for(DataEntry entry : allData){
-        if(entry.getStatus()){
-          acceptedData.add(entry);
-        }
+      if(entry.getStatus()){
+        acceptedData.add(entry);
       }
+    }
     writeToFile(acceptedData); //write data to CSV file
     return acceptedData;
   }  
@@ -130,7 +130,7 @@ public class Analysis {
       System.out.println("File not found");
     }
     StringBuilder outputString = new StringBuilder();
-    output.println("Accepted Status,School,Program Name,Program Code,Tags"); //header
+    output.println("Accepted Status,School,Program Name,Program Code,Tags,Year"); //write header
     
     for(int i = 0; i < data.size(); i ++){
       outputString.setLength(0);
@@ -166,11 +166,75 @@ public class Analysis {
       }else if(data.get(i).getTags().size() == 1){ //add tag to StringBuilder if there is a single one
         outputString.append(data.get(i).getTags().get(0));
       }
+      outputString.append("," + data.get(i).getYear()); //adding the year
       output.println(outputString);
     }
     output.close(); //close PrintWriter
   }
   
+  //Method to read from storage
+  public static ArrayList<DataEntry> readExistingData(){
+    Scanner input = null;
+    boolean status = false;
+    String school;
+    String programName;
+    String programCode;
+    String combinedTraits; //String holding all the traits (all the programs, tags, school etc)
+    String row;
+    int year;
+    ArrayList<String> tags = new ArrayList<String>();    
+    ArrayList<DataEntry> data = new ArrayList<DataEntry>();
+    String tagString = "";
+    try{
+      input = new Scanner(new File("storage.csv"));
+    }catch(FileNotFoundException e){
+      System.out.println("storage file not found");
+    }
+    
+    input.nextLine(); //skip header row;
+    while(input.hasNext()){
+      row = input.nextLine();
+      ArrayList<String> rowList = new ArrayList<>();
+      
+      //Iterates through the row and makes sure we're only splitting on commas not part of quotes
+      boolean inElement = false;
+      int startIndex = 0;
+      for (int i = 0; i < row.length(); i++) {
+        char c = row.charAt(i);
+        //Split on this comma
+        if (!inElement && c == ',') {
+          rowList.add(row.substring(startIndex, i));
+          startIndex = i + 1;
+          //Quotes start here, ignore everything until the next quote
+        } else if (!inElement && c == '"') {
+          inElement = true;
+          //Quotes end here, we can start reading commas again
+        } else if (inElement && c == '"') {
+          inElement = false;
+        }
+      }
+      
+      status = rowList.get(0).equals("true");
+      school = rowList.get(1);
+      programName = rowList.get(2);
+      programCode = rowList.get(3);
+      tagString = rowList.get(4);
+      year = Integer.parseInt(rowList.get(5));
+      combinedTraits = status + ", " + school + ", " + programCode + ", " + programName + ", " + tagString + year;
+      
+
+      while(tagString.indexOf(",") != -1){ //adding all tags to combinedTraits
+        tags.add(tagString.substring(0,tagString.indexOf(",")));
+        tagString = tagString.substring(tagString.indexOf(",") + 1);                 
+      }
+      tags.add(tagString); //add the last tag (doesn't have a comma after)
+                 
+      data.add(new DataEntry(status, school, programName, programCode, tags, combinedTraits, year)); 
+    }
+    return data;
+  }
+  
+  //Returns count of entries that fit the filters
   public static ArrayList<Integer> analysis(ArrayList<String> independent, ArrayList<String> dependent, ArrayList<DataEntry> data){
     ArrayList<Integer> count = new ArrayList<Integer>(); 
     ArrayList<DataEntry> matchData = new ArrayList<DataEntry>();
@@ -215,7 +279,6 @@ public class Analysis {
     }
     return percentages;
   }
-
   
   
   public static ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns ArrayList of unique schools
@@ -228,6 +291,15 @@ public class Analysis {
     return schools;
   }
   
+  public static ArrayList<Integer> getAllYears(ArrayList<DataEntry> data){ //returns ArrayList of unique years
+    ArrayList<Integer> years = new ArrayList<Integer>();
+    for(int i = 0; i < data.size(); i ++){
+      if(years.indexOf(data.get(i).getYear()) == -1){
+        years.add(data.get(i).getYear()); //add if school isn't in the schools ArrayList
+      }
+    }
+    return years;
+  }
   
   public static ArrayList<String> getAllTags(ArrayList<DataEntry> data){ //returns ArrayList of unique tags
     ArrayList<String> tags = new ArrayList<String>();
