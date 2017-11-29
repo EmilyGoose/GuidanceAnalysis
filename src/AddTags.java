@@ -164,41 +164,41 @@ public class AddTags extends JFrame implements ListSelectionListener {
    */
   
   class AddListener implements ActionListener, DocumentListener{
-    boolean enable = false;
-    boolean check = false;
-    JButton button;
+    boolean enable = false;    //used for controlling butons
+    boolean check = false;     //used to check if item is already in JList
+    boolean checkAll = false;
+    JButton button;            //just a button
     
     public AddListener(JButton button) {
       this.button = button;
     }
     
     public void actionPerformed(ActionEvent e) {
-      String newTag = tagField.getText();
+      String newTag = tagField.getText();               //gets tag user entered into textfield
       
+      //checks if entered tag is the same as a preexisting one
       for (int i =0; i <listModel.getSize(); i ++){
         if (newTag.equalsIgnoreCase((String)listModel.getElementAt(i))){
           check = true;
-          System.out.println("repeat");
         }
       }
-      
+      //creating tagfield requirements
       if (tagField.equals("") || listModel.contains(tagField) == true) {
         tagField.requestFocusInWindow();
         tagField.selectAll();
         return;
       }
       
-      int index = list.getSelectedIndex();
+      int index = list.getSelectedIndex();    //get index for selection placement
       
       if (check == false){
         listModel.addElement(tagField.getText());  //adds text on to the end
       }
       
-      //adds new tag to array list with all existing tags (to be used for future suggestions)
-      boolean check = false;
+      //adds new tag to array list with all existing tags by checking if it is already there 
       for (int i = 0; i < allTags.size(); i++){     
         if (newTag.equals(allTags.get(i))){
-          check = true;
+          checkAll = true;
         }
       }
       if (check == false){
@@ -213,7 +213,9 @@ public class AddTags extends JFrame implements ListSelectionListener {
       list.ensureIndexIsVisible(index);
     }
     
-// @Override
+    //the following methods must be included in this class in order for it to function
+    
+    @Override
     public void changedUpdate(DocumentEvent e) {
       if(!handleEmptyTextField(e)) {
         enableButton();
@@ -247,25 +249,31 @@ public class AddTags extends JFrame implements ListSelectionListener {
     }
   }
   
-  
+  /* FinishListener
+   * adds contents of JList to ArrayList, closes current frame and opens StartingFrame
+   */
   class FinishListener implements ActionListener{
     public void actionPerformed(ActionEvent e) {
       
+      //adds JList tags to this programs ArrayList tags
       for (int i = 0; i < listModel.getSize(); i++){
         newTags.add((String)listModel.getElementAt(i));
       }
       
+      //launches new frame and disposes of old frame
       new StartingFrame();
-      System.out.println(newTags);
       thisFrame.dispose();
     }
   }
   
+  //method is necessary for DocumentListener
   public void valueChanged(ListSelectionEvent e) {
     //empty method: DON'T PUT ANYTHING HERE
     //causes errors
   }
   
+  //MAIN TO BE DELETED
+  //only for testing purposes
   public static void main(String[] args) { 
     String one = "abc";
     String two = "def";
