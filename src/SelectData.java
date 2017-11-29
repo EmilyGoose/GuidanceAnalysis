@@ -96,19 +96,30 @@ class TypeSelectFrame extends JFrame{
 ////////////////////////////////////////////////////////////////////////
 class SelectDataFrame extends JFrame { //frame to pick data to compare schools and a tag
   JFrame thisFrame;
+  int year;
+  String tag;
   Analysis analysisClass = new Analysis();
   ArrayList<String> dependent = new ArrayList<String>();
   ArrayList<String> independent = new ArrayList<String>();
+  ArrayList<Integer> yearOption;
+  ArrayList<String> tagOption;
+  ArrayList<String> schools;
   
   //Constructor - this runs first
   SelectDataFrame(ArrayList<DataEntry> data) { 
     super("Filter Data");
     this.thisFrame = this; 
-    
     this.setSize(1000,1000);
     this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
     this.setResizable (false);
     
+   yearOption = analysisClass.getAllYears(data);
+   tagOption = analysisClass.getAllTags(data);
+   schools = analysisClass.getAllSchools(data);
+    
+    yearOption.add(0, 0000); //blank options to ensure data is chosen
+    tagOption.add(0, "Select...");
+                   
     JCheckBox check;//define variables     
     Font bigFont = new Font("", Font.PLAIN, 20);
     
@@ -125,15 +136,21 @@ class SelectDataFrame extends JFrame { //frame to pick data to compare schools a
     JLabel header = new JLabel("Select Data for Graphing", JLabel.CENTER);
     header.setFont(bigFont);
     
+    //Create JComboBox to select year
+    JComboBox yearList = new JComboBox(yearOption.toArray());
+    yearList.addActionListener(new yearListener());
+    yearList.setMaximumSize(new Dimension(150, 25));
+    panel1.add(new JLabel("Select Year"));
+    panel1.add(yearList);
+    
     //Create JComboBox to select tag
-    JComboBox tagList = new JComboBox(analysisClass.getAllTags(data).toArray());
+    JComboBox tagList = new JComboBox(tagOption.toArray());
     tagList.addActionListener(new tagListener());
     tagList.setMaximumSize(new Dimension(150, 25));
     panel1.add(new JLabel("Select Tag"));
     panel1.add(tagList);
     
     //Create CheckBox for each school
-    ArrayList<String> schools = analysisClass.getAllSchools(data);
     panel2.add(new JLabel("Select School(s)"));
     for(int i = 0; i < schools.size(); i ++){
       check = new JCheckBox(schools.get(i));
@@ -158,13 +175,19 @@ class SelectDataFrame extends JFrame { //frame to pick data to compare schools a
     this.setVisible(true);
   }
   
-  //ActionListener for the comboBox
+  //ActionListener for the year comboBox
+  class yearListener implements ActionListener{
+    public void actionPerformed(ActionEvent e){
+      JComboBox cb = (JComboBox)e.getSource();
+      year = (int)cb.getSelectedItem();
+    }
+  }
+  
+  //ActionListener for the tag comboBox
   class tagListener implements ActionListener{
     public void actionPerformed(ActionEvent e){
       JComboBox cb = (JComboBox)e.getSource();
-      String tag = (String)cb.getSelectedItem();
-      dependent.clear(); //replace dependent with current selection
-      dependent.add(tag);
+      tag = (String)cb.getSelectedItem();
     }
   }
   
@@ -183,9 +206,13 @@ class SelectDataFrame extends JFrame { //frame to pick data to compare schools a
   //ActionListener for the button to launch graphs
   class confirmButtonListener implements ActionListener{
     public void actionPerformed(ActionEvent e){
-      thisFrame.dispose();
-      //Create graph
+      if(!tag.equals("Select...") && year != 0000){ //Make sure an option is selected for both tags and years
+        thisFrame.dispose();
+        dependent.add(tag);
+        dependent.add(Integer.toString(year));
+        //Create graph
       //getPercentages(analysis(independent, dependent, data)) <----- feed this into graph methods
+      }
     }
   }   
 }
@@ -383,7 +410,7 @@ class SingleDataFrame extends JFrame { //frame to select data vs year
   class confirmButtonListener implements ActionListener{
     public void actionPerformed(ActionEvent e){
       thisFrame.dispose();
-      dependent.add(""); //no dependent, indexOf of black string always zero so analysis method still works
+      dependent.add(""); //no dependent, indexOf of blank string always zero so analysis method still works
       //Create graph
       //getPercentages(analysis(independent, dependent, data)) <----- feed this into graph methods
     }
