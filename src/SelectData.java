@@ -25,15 +25,16 @@ class TypeSelectFrame extends JFrame{
   JFrame thisFrame;
   String type = "";
   String[] graphOptions = new String[]{"Please select an option", "Subject vs. School", "Year over Year Comparison", "Single Variable"};
-  
-  TypeSelectFrame() { 
+  ArrayList<DataEntry> data;
+    
+  TypeSelectFrame(ArrayList<DataEntry> data) { //put in current year data only
     super("Filter Data");
     this.thisFrame = this; 
     
     this.setSize(1000,1000);
     this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
     this.setResizable (false);
-    
+    this.data = data;
     JCheckBox check;//define variables     
     Font bigFont = new Font("", Font.PLAIN, 20);
     
@@ -70,13 +71,13 @@ class TypeSelectFrame extends JFrame{
     public void actionPerformed(ActionEvent e){
       if(type.equals("Subject vs. School")){
         thisFrame.dispose(); 
-        new SelectDataFrame();
+        new SelectDataFrame(data);
       }else if(type.equals("Year over Year Comparison")){
         thisFrame.dispose();
         new YearDataFrame();
       }else if(type.equals("Single Variable")){
         thisFrame.dispose();
-        new SingleDataFrame();
+        new SingleDataFrame(data);
       }else{ //no type selected, nothing happens
       }
     }      
@@ -89,10 +90,6 @@ class TypeSelectFrame extends JFrame{
       type = (String)cb.getSelectedItem();
     }
   }
-  
-  public static void main(String args[]){
-    new TypeSelectFrame();
-  }
 }
 
 
@@ -102,10 +99,9 @@ class SelectDataFrame extends JFrame { //frame to pick data to compare schools a
   Analysis analysisClass = new Analysis();
   ArrayList<String> dependent = new ArrayList<String>();
   ArrayList<String> independent = new ArrayList<String>();
-  ArrayList<DataEntry> data = analysisClass.readExistingData();
   
   //Constructor - this runs first
-  SelectDataFrame() { 
+  SelectDataFrame(ArrayList<DataEntry> data) { 
     super("Filter Data");
     this.thisFrame = this; 
     
@@ -203,7 +199,7 @@ class YearDataFrame extends JFrame { //frame to select data vs year
   String school;
   ArrayList<String> dependent = new ArrayList<String>();
   ArrayList<String> independent = new ArrayList<String>();
-  ArrayList<DataEntry> data = analysisClass.readExistingData();
+  ArrayList<DataEntry> data = analysisClass.readExistingData(); //gets all data, not just current year
   ArrayList<String> tagOption = analysisClass.getAllTags(data);
   ArrayList<String> schoolOption = analysisClass.getAllSchools(data);  
   
@@ -327,10 +323,9 @@ class SingleDataFrame extends JFrame { //frame to select data vs year
   Analysis analysisClass = new Analysis();
   ArrayList<String> dependent = new ArrayList<String>();
   ArrayList<String> independent = new ArrayList<String>();
-  ArrayList<DataEntry> data = analysisClass.readExistingData();
   
   //Constructor - this runs first
-  SingleDataFrame() { 
+  SingleDataFrame(ArrayList<DataEntry> data) { 
     super("Filter Data");
     this.thisFrame = this; 
     
