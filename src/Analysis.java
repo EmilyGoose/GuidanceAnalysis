@@ -25,6 +25,7 @@ public class Analysis {
     String school;
     String programName;
     String programCode;
+    String programCell;
     String combinedTraits; //String holding all the traits (all the programs, tags, school etc)
     ArrayList<String> tags = new ArrayList<String>();    
     ArrayList<DataEntry> allData = new ArrayList<DataEntry>();
@@ -69,7 +70,7 @@ public class Analysis {
       school = rowList.get(1);
       programCode = rowList.get(2);
       programName = rowList.get(3);
-      //tags = tagger.getTags(programCode, programName);
+      tags = tagger.getTags(programCode, programName);
       combinedTraits = status + ", " + school + ", " + programCode + ", " + programName + ", " + year; 
       
       for(int i = 0; i < tags.size(); i ++){ //adding all tags to combinedTraits
@@ -103,10 +104,12 @@ public class Analysis {
       }
       
       school = rowList.get(0);
-      programName = rowList.get(1);
+      programCell = rowList.get(1);
       status = rowList.get(3).length() > 0;
-      programCode = "";
-      //tags = tagger.getTags(programCode, programName); //add tags
+      programCode = programCell.substring(0, programCell.indexOf(" -")); //programCell contains both the code and name, seperated by a dash
+      programCell.substring(programCell.indexOf(" - ")); //seperate and store in respective variables
+      programName = programCell;
+      tags = tagger.getTags(programCode, programName); //add tags
       combinedTraits = status + ", " + school + ", " + programCode + ", " + programName + ", " + year;
       
       for(int i = 0; i < tags.size(); i ++){ //adding all tags to combinedTraits
