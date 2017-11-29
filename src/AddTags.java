@@ -20,245 +20,253 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 public class AddTags extends JFrame implements ListSelectionListener {
-
- private String programCode;
- private String programTitle;
- private String uniColl;
- private String[] programTags;
- private ArrayList<String> allTags = new ArrayList<>();
- private ArrayList<String> newTags = new ArrayList<>();
- 
- private JFrame thisFrame;
- private JList list;
- private DefaultListModel listModel;
- private JButton removeButton;
- private JTextField tagField;
- 
- private AddTags(String programCode, String programTitle, String uniColl, String[] programTags, ArrayList<String> allTags){
-  super("Edit Tags");
   
-  //creating frame and adding features
-  this.thisFrame = this;
-  this.setSize(600,350);
-  this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
-  this.setResizable (false);
+  private String programCode;
+  private String programTitle;
+  private String uniColl;
+  private String[] programTags;
+  private ArrayList<String> allTags = new ArrayList<>();
+  private ArrayList<String> newTags = new ArrayList<>();
   
-  //initializing all the variables
-  this.programCode = programCode;
-  this.programTitle = programTitle;
-  this.programTags = programTags;
-  this.allTags = allTags;
-  this.uniColl = uniColl;
+  private JFrame thisFrame;
+  private JList list;
+  private DefaultListModel listModel;
+  private JButton removeButton;
+  private JTextField tagField;
   
-  //creating main panel
-  JPanel main = new JPanel();
-
-  //adding previous tags to list content
-  listModel = new DefaultListModel();
-  for (int i = 0; i < programTags.length; i++) {
-   listModel.addElement(programTags[i]);
-  }
-  
-  //creating list and adding features
-  list = new JList (listModel);
-  list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-  list.setSelectedIndex(0);
-  list.addListSelectionListener((ListSelectionListener) this);
-  JScrollPane listScrollPane = new JScrollPane(list);
-  Dimension d = list.getPreferredSize();
-  d.width = 300;
-        d.height = 100;
-        listScrollPane.setPreferredSize(d);
-        
-        //add button creation and adding to actionListener
-        JButton addButton = new JButton("Add Tag: ");
-        AddListener addListener = new AddListener(addButton);
-        addButton.setActionCommand("Add Tag:");
-        addButton.addActionListener(addListener);
-        addButton.setEnabled(false);
-        
-        //remove button creation
-        removeButton = new JButton ("Remove Selected Tag");
-        removeButton.setActionCommand("Remove Selected Tag");
-        removeButton.addActionListener(new RemoveListener());
-        
-        //text field where new tagField is entered
-        tagField = new JTextField(20);
-        tagField.addActionListener(addListener);
-        tagField.getDocument().addDocumentListener(addListener);
-        String thisTag = listModel.getElementAt(list.getSelectedIndex()).toString();
-        
-        //finish button
-        JButton finishButton = new JButton("Save and Finish");
-        finishButton.addActionListener(new FinishListener());
-        
-        //exit button
-        JButton exitButton = new JButton("Exit");
-        exitButton.addActionListener(new ExitListener());
-        
-        //info panel: has program code and name and university
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        JLabel info1 = new JLabel("Program Title: "+ programTitle);
-        JLabel info2 = new JLabel("Program Code: "+ programCode);
-        JLabel info3 = new JLabel("University/College: "+ uniColl);
-     
-        infoPanel.add(info1);
-        infoPanel.add(info2);
-        infoPanel.add(info3);
-        
-        //north panel
-        JPanel northPanel = new JPanel();
-        northPanel.setLayout(new BoxLayout (northPanel, BoxLayout.Y_AXIS));
-        northPanel.add(Box.createVerticalStrut(10));
-        northPanel.add(infoPanel);
-        northPanel.add(Box.createVerticalStrut(15));
-        
-        northPanel.add(listScrollPane);
-        northPanel.add(Box.createVerticalStrut(15));
-        
-        //panel for buttons below list: stuff to make it pretty
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));  
-        buttonPanel.add(removeButton);
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(new JSeparator(SwingConstants.VERTICAL));
-        buttonPanel.add(Box.createHorizontalStrut(5));
-        buttonPanel.add(tagField);
-        buttonPanel.add(addButton);
-       
-        JPanel button2Panel = new JPanel();
-        button2Panel.add(finishButton);
-        button2Panel.add(exitButton);
-        
-        main.add(northPanel);
-        main.add(buttonPanel);
-        main.add(button2Panel);
-        
-        
-        this.add(main);
-        this.setVisible(true);
- }
- 
- class RemoveListener implements ActionListener{
-  public void actionPerformed(ActionEvent e) {
-   int index = list.getSelectedIndex();
-
-
-   int size = listModel.getSize();
-   System.out.println(size);
-   if (size == 0) {
-    removeButton.setEnabled(false);
-   }else {
-    if (index == listModel.getSize()) {
-     index--;
-    }
-    listModel.remove(index);
-    list.setSelectedIndex(index);
-    list.ensureIndexIsVisible(index);
-   }
-  }
- }
- 
- class AddListener implements ActionListener, DocumentListener{
-  boolean enable = false;
-  JButton button;
-  
-  public AddListener(JButton button) {
-   this.button = button;
-  }
-  
-  public void actionPerformed(ActionEvent e) {
-   String newTag = tagField.getText();
-   
-    if (tagField.equals("") || listModel.contains(tagField) == true) {
-     tagField.requestFocusInWindow();
-     tagField.selectAll();
-     return;
+  private AddTags(String programCode, String programTitle, String uniColl, String[] programTags, ArrayList<String> allTags){
+    super("Edit Tags");
+    
+    //creating frame and adding features
+    this.thisFrame = this;
+    this.setSize(600,350);
+    this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
+    this.setResizable (false);
+    
+    //initializing all the variables
+    this.programCode = programCode;
+    this.programTitle = programTitle;
+    this.programTags = programTags;
+    this.allTags = allTags;
+    this.uniColl = uniColl;
+    
+    //creating main panel
+    JPanel main = new JPanel();
+    
+    //adding previous tags to list content
+    listModel = new DefaultListModel();
+    for (int i = 0; i < programTags.length; i++) {
+      listModel.addElement(programTags[i]);
     }
     
-    int index = list.getSelectedIndex();
+    //creating list and adding features
+    list = new JList (listModel);
+    list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    list.setSelectedIndex(0);
+    list.addListSelectionListener((ListSelectionListener) this);
+    JScrollPane listScrollPane = new JScrollPane(list);
+    Dimension d = list.getPreferredSize();
+    d.width = 300;
+    d.height = 100;
+    listScrollPane.setPreferredSize(d);
     
-    listModel.addElement(tagField.getText());  //adds text on to the end
+    //add button creation and adding to actionListener
+    JButton addButton = new JButton("Add Tag: ");
+    AddListener addListener = new AddListener(addButton);
+    addButton.setActionCommand("Add Tag:");
+    addButton.addActionListener(addListener);
+    addButton.setEnabled(false);
     
-    //adds text to this programs arrayList
-     newTags.add(newTag);
-     //adds new tag to array list with all existing tags (to be used for future suggestions)
-     boolean check = false;
-     for (int i = 0; i < allTags.size(); i++){     
-       if (newTag.equals(allTags.get(i))){
-         check = true;
-       }
-     }
-     if (check == false){
-       allTags.add(newTag);
-     }
+    //remove button creation
+    removeButton = new JButton ("Remove Selected Tag");
+    removeButton.setActionCommand("Remove Selected Tag");
+    removeButton.addActionListener(new RemoveListener());
     
-    //resetting textfield:
-    tagField.requestFocusInWindow();
-    tagField.setText("");
+    //text field where new tagField is entered
+    tagField = new JTextField(20);
+    tagField.addActionListener(addListener);
+    tagField.getDocument().addDocumentListener(addListener);
+    String thisTag = listModel.getElementAt(list.getSelectedIndex()).toString();
     
-    list.setSelectedIndex(index);
-    list.ensureIndexIsVisible(index);
+    //finish button
+    JButton finishButton = new JButton("Save and Finish");
+    finishButton.addActionListener(new FinishListener());
+        
+    //info panel: has program code and name and university
+    JPanel infoPanel = new JPanel();
+    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+    JLabel info1 = new JLabel("Program Title: "+ programTitle);
+    JLabel info2 = new JLabel("Program Code: "+ programCode);
+    JLabel info3 = new JLabel("University/College: "+ uniColl);
+    
+    //adding separate information to panel
+    infoPanel.add(info1);
+    infoPanel.add(info2);
+    infoPanel.add(info3);
+    
+    //north panel: contains info and list
+    JPanel northPanel = new JPanel();
+    northPanel.setLayout(new BoxLayout (northPanel, BoxLayout.Y_AXIS));
+    northPanel.add(Box.createVerticalStrut(10));
+    northPanel.add(infoPanel);
+    northPanel.add(Box.createVerticalStrut(15));
+    northPanel.add(listScrollPane);
+    northPanel.add(Box.createVerticalStrut(15));
+    
+    //panel for buttons below list and appearance modifier
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));  
+    buttonPanel.add(removeButton);
+    buttonPanel.add(Box.createHorizontalStrut(5));
+    buttonPanel.add(new JSeparator(SwingConstants.VERTICAL));
+    buttonPanel.add(Box.createHorizontalStrut(5));
+    buttonPanel.add(tagField);
+    buttonPanel.add(addButton);
+    
+    //holds 2nd row of buttons (finish & save)
+    JPanel button2Panel = new JPanel();
+    button2Panel.add(finishButton);
+    
+    //adding all panels to main
+    main.add(northPanel);
+    main.add(buttonPanel);
+    main.add(button2Panel);
+    
+    //adding main to frame and making frame visible
+    this.add(main);
+    this.setVisible(true);
   }
-
-// @Override
- public void changedUpdate(DocumentEvent e) {
-  if(!handleEmptyTextField(e)) {
-   enableButton();
-  }
- }
-
- @Override
- public void insertUpdate(DocumentEvent e) {
-  enableButton();
   
- }
-
- @Override
- public void removeUpdate(DocumentEvent e) {
-  handleEmptyTextField(e);  
- }
-
- public void enableButton() {
-  if (!enable) {
-   button.setEnabled(true);
-  }
- }
- 
- public boolean handleEmptyTextField(DocumentEvent e) {
-  if (e.getDocument().getLength() <=0) {
-   button.setEnabled(false);
-   enable = false;
-   return true;
-  }
-  return false;
- }
- }
- 
-
- class FinishListener implements ActionListener{
+  /* RemoveListener
+   * removes tags from list and from array
+   */
+  
+  class RemoveListener implements ActionListener{
     public void actionPerformed(ActionEvent e) {
-     
+      int index = list.getSelectedIndex();    //index of selected item in list
+      int size = listModel.getSize();     //total size of list
+      if (size == 0) {
+        removeButton.setEnabled(false);     //closes remove button when theres nothing in the list
+      }else {
+        if (index == size) {
+          index--;
+        }
+        listModel.remove(index);     //removes item from list
+        list.setSelectedIndex(index);     //moves selected index
+        list.ensureIndexIsVisible(index);    //makes selection visible
+        
+      }
+    }
+  }
+  
+  /* AddListener class
+   * adds from JTextField to JList
+   */
+  
+  class AddListener implements ActionListener, DocumentListener{
+    boolean enable = false;
+    boolean check = false;
+    JButton button;
+    
+    public AddListener(JButton button) {
+      this.button = button;
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+      String newTag = tagField.getText();
+      
+      for (int i =0; i <listModel.getSize(); i ++){
+        if (newTag.equalsIgnoreCase((String)listModel.getElementAt(i))){
+          check = true;
+          System.out.println("repeat");
+        }
+      }
+      
+      if (tagField.equals("") || listModel.contains(tagField) == true) {
+        tagField.requestFocusInWindow();
+        tagField.selectAll();
+        return;
+      }
+      
+      int index = list.getSelectedIndex();
+      
+      if (check == false){
+        listModel.addElement(tagField.getText());  //adds text on to the end
+      }
+      
+      //adds new tag to array list with all existing tags (to be used for future suggestions)
+      boolean check = false;
+      for (int i = 0; i < allTags.size(); i++){     
+        if (newTag.equals(allTags.get(i))){
+          check = true;
+        }
+      }
+      if (check == false){
+        allTags.add(newTag);
+      }
+      
+      //resetting textfield:
+      tagField.requestFocusInWindow();
+      tagField.setText("");
+      
+      list.setSelectedIndex(index);
+      list.ensureIndexIsVisible(index);
+    }
+    
+// @Override
+    public void changedUpdate(DocumentEvent e) {
+      if(!handleEmptyTextField(e)) {
+        enableButton();
+      }
+    }
+    
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+      enableButton();
+      
+    }
+    
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+      handleEmptyTextField(e);  
+    }
+    
+    public void enableButton() {
+      if (!enable) {
+        button.setEnabled(true);
+      }
+    }
+    
+    public boolean handleEmptyTextField(DocumentEvent e) {
+      if (e.getDocument().getLength() <=0) {
+        button.setEnabled(false);
+        enable = false;
+        return true;
+      }
+      return false;
+    }
+  }
+  
+  
+  class FinishListener implements ActionListener{
+    public void actionPerformed(ActionEvent e) {
+      
+      for (int i = 0; i < listModel.getSize(); i++){
+        newTags.add((String)listModel.getElementAt(i));
+      }
+      
       new StartingFrame();
       System.out.println(newTags);
       thisFrame.dispose();
     }
   }
- 
- class ExitListener implements ActionListener{
-  public void actionPerformed(ActionEvent e){
-   thisFrame.dispose();
-   new StartingFrame();
+  
+  public void valueChanged(ListSelectionEvent e) {
+    //empty method: DON'T PUT ANYTHING HERE
+    //causes errors
   }
- }
- 
- public void valueChanged(ListSelectionEvent e) {
-   //empty method: DON'T PUT ANYTHING HERE
-   //causes errors
- }
- 
-   public static void main(String[] args) { 
+  
+  public static void main(String[] args) { 
     String one = "abc";
     String two = "def";
     String yes = "1234";
@@ -267,8 +275,6 @@ public class AddTags extends JFrame implements ListSelectionListener {
     four.add("qrs");
     four.add("tuv");
     new AddTags(one, two, yes, three, four);
-   }
- 
+  }
+  
 }
-
- 
