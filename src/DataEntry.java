@@ -8,14 +8,16 @@ public class DataEntry{
   private String programCode;
   private String combinedTraits;
   private ArrayList<String> tags;
+  private int year;
   
-  public DataEntry(boolean acceptedStatus, String school, String programName, String programCode, ArrayList<String> tags, String combinedTraits){
+  public DataEntry(boolean acceptedStatus, String school, String programName, String programCode, ArrayList<String> tags, String combinedTraits, int year){
     this.acceptedStatus = acceptedStatus; 
     this.school = school;
     this.programName = programName; 
     this.programCode = programCode;
     this.tags = tags; 
     this.combinedTraits = combinedTraits;
+    this.year = year;
   }
   
   public boolean getStatus(){
@@ -42,6 +44,10 @@ public class DataEntry{
     return this.tags;
   }
   
+  public int getYear(){
+    return this.year;
+  }
+  
   public void setStatus(boolean status){
     this.acceptedStatus = status;  
   }
@@ -64,5 +70,9 @@ public class DataEntry{
   
   public void setTags(ArrayList<String> tags){
     this.tags = tags; 
+  }
+  
+  public void setYear(int year){
+   this.year = year; 
   }
 }
