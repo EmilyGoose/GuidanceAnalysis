@@ -82,7 +82,10 @@ public class AddTags extends JFrame implements ListSelectionListener {
     tagField.addActionListener(addListener);
     tagField.getDocument().addDocumentListener(addListener);
     String thisTag = list.getSelectedIndex() > -1 ? listModel.getElementAt(list.getSelectedIndex()).toString() : null ;
-    
+
+    //TODO: NOTHING BEYOND THIS LINE WORKS
+    //It's not displaying even though I saw it working a while ago
+
     //finish button
     JButton finishButton = new JButton("Save and Finish");
     finishButton.addActionListener(new FinishListener());
