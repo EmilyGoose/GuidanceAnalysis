@@ -10,19 +10,23 @@
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
-import java.awt.FlowLayout;
+	import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+	import java.io.File;
+	import java.lang.reflect.Array;
 	import java.util.ArrayList;
 
-	import javax.swing.SwingUtilities;
-import javax.swing.BoxLayout;
+	import javax.swing.BoxLayout;
+	import javax.xml.crypto.Data;
 
-	class StartingFrame extends JFrame { 
+class StartingFrame extends JFrame {
 
 	  JFrame thisFrame;
+	  ArrayList<DataEntry> data;
+	  File currentCollegeFile;
+	  File currentUniFile;
 	  
 	  //Constructor - this runs first
 	  StartingFrame() { 
@@ -47,7 +51,7 @@ import javax.swing.BoxLayout;
 	    
 	    //Create a JButton for the centerPanel
 	    JButton startButton = new JButton("Add Files");
-	    startButton.addActionListener(new BrowseButtonListener());
+	    startButton.addActionListener(new addFileListener());
 	    
 	    //create a JButton for exit panel
 	    JButton exitButton = new JButton("Exit");
@@ -80,39 +84,18 @@ import javax.swing.BoxLayout;
 	  }
 	  
 	  //This is an inner class that is used to detect a button press
-	 class BrowseButtonListener implements ActionListener {  
+	 class addFileListener implements ActionListener {
 	    public void actionPerformed(ActionEvent event)  {
+//
+//	    	JFrame main = new JFrame();
 
-	    	ArrayList<DataEntry> data = Analysis.readNewData();
-	    	ArrayList<Integer> percentages = Analysis.analysis(Analysis.getAllSchools(data), Analysis.getAllTags(data), data);
-	    	JFrame main = new JFrame("Data");
-	    	PieChart pie = new PieChart();
-	    	for (int i = 0; i < Analysis.getAllSchools(data).size(); i++) {
-	    		pie.addToData(Analysis.getAllSchools(data).get(i), percentages.get(i));
-			}
-			main.add(pie);
-	    	main.setSize(1920,1080);
-	    	pie.setVisible(true);
-	    	main.pack();
-	    	main.setVisible(true);
-//	      JFrame browseFrame= new JFrame("Browse");
-//	      browseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    	FileChooser fChooser = new FileChooser();
+//
+//	    	main.add(fChooser);
+//	    	main.pack();
+//	    	main.setVisible(true);
 
-//	      JPanel main = new JPanel();
-
-//	      JPanel datePanel = new JPanel();
-//	      JLabel dateLabel = new JLabel("Year of admissions: ", JLabel.RIGHT);
-//	      JTextField dateField = new JTextField(8);
-//	      datePanel.add(dateLabel);
-//	      datePanel.add(dateField);
-
-//		  FileChooser fc = new FileChooser();
-//	      main.add(fc);
-//	      fc.getFile("college"); //todo: do something with the file
-	      //main.add(datePanel);
-//	      browseFrame.add(main);
-//	      browseFrame.pack();
-//	      browseFrame.setVisible(true);
+	    	data = Analysis.readNewData(2017);
 	    }
 
 	  }

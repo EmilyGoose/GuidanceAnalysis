@@ -2,20 +2,14 @@ import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
 import javax.swing.BoxLayout;
-import javax.swing.SwingUtilities;
-import javax.swing.BoxLayout;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -24,9 +18,10 @@ public class AddTags extends JFrame implements ListSelectionListener {
   private String programCode;
   private String programTitle;
   private String uniColl;
-  private String[] programTags;
+  private ArrayList<String> programTags;
   private ArrayList<String> allTags = new ArrayList<>();
-  private ArrayList<String> newTags = new ArrayList<>();
+  public ArrayList<String> newTags = new ArrayList<>();
+  public boolean ready = false;
   
   private JFrame thisFrame;
   private JList list;
@@ -34,7 +29,7 @@ public class AddTags extends JFrame implements ListSelectionListener {
   private JButton removeButton;
   private JTextField tagField;
   
-  private AddTags(String programCode, String programTitle, String uniColl, String[] programTags, ArrayList<String> allTags){
+  AddTags(String programCode, String programTitle, String uniColl, ArrayList<String> programTags, ArrayList<String> allTags){
     super("Edit Tags");
     
     //creating frame and adding features
@@ -55,8 +50,8 @@ public class AddTags extends JFrame implements ListSelectionListener {
     
     //adding previous tags to list content
     listModel = new DefaultListModel();
-    for (int i = 0; i < programTags.length; i++) {
-      listModel.addElement(programTags[i]);
+    for (int i = 0; i < programTags.size(); i++) {
+      listModel.addElement(programTags.get(i));
     }
     
     //creating list and adding features
@@ -86,7 +81,7 @@ public class AddTags extends JFrame implements ListSelectionListener {
     tagField = new JTextField(20);
     tagField.addActionListener(addListener);
     tagField.getDocument().addDocumentListener(addListener);
-    String thisTag = listModel.getElementAt(list.getSelectedIndex()).toString();
+    String thisTag = list.getSelectedIndex() > -1 ? listModel.getElementAt(list.getSelectedIndex()).toString() : null ;
     
     //finish button
     JButton finishButton = new JButton("Save and Finish");
@@ -259,9 +254,11 @@ public class AddTags extends JFrame implements ListSelectionListener {
       for (int i = 0; i < listModel.getSize(); i++){
         newTags.add((String)listModel.getElementAt(i));
       }
-      
+
+      ready = true;
+
       //launches new frame and disposes of old frame
-      new StartingFrame();
+//      new StartingFrame();
       thisFrame.dispose();
     }
   }
@@ -271,18 +268,6 @@ public class AddTags extends JFrame implements ListSelectionListener {
     //empty method: DON'T PUT ANYTHING HERE
     //causes errors
   }
-  
-  //MAIN TO BE DELETED
-  //only for testing purposes
-  public static void main(String[] args) { 
-    String one = "abc";
-    String two = "def";
-    String yes = "1234";
-    String[] three= new String[]{"ghi", "jkl", "mnop"};
-    ArrayList<String> four = new ArrayList<String>();
-    four.add("qrs");
-    four.add("tuv");
-    new AddTags(one, two, yes, three, four);
-  }
+
   
 }

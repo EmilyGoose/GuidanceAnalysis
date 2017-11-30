@@ -66,11 +66,12 @@ public class Tagger {
 			return tagDatabase.get(programCode);
 		} else {
 			//Prompt the user for tags
-			//TODO: Make this a GUI
 			//Scanner is temporary, only for testing
+
             System.out.println("No tags found, enter manual");
-			String newTagString = inputScanner.nextLine();
-			ArrayList<String> newTags = new ArrayList<>(Arrays.asList(newTagString.split(",")));
+            AddTags tags = new AddTags(programCode, programName, "Post-secondary", new ArrayList<String>(), possibleTags);
+            while (!tags.ready);
+			ArrayList<String> newTags = tags.newTags;
 			//End temporary testing code
 
             //Add new elements to possibleTags while keeping out duplicates

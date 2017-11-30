@@ -12,7 +12,7 @@ public class Analysis {
   /**
    * readNewData
    * Takes in year (selected by GUI) and reads from files selected by user
-   * @param integer containing year
+   * @param year - int containing year
    * @return ArrayList of DataEntries (only accepted data)
    */
   public static ArrayList<DataEntry> readNewData(int year){
@@ -132,7 +132,7 @@ public class Analysis {
   /**
    * writeToFile
    * Takes in data to be written to file and writes it as CSV
-   * @param ArrayList of DataEntries to be written
+   * @param data - ArrayList of DataEntries to be written
    * @return none
    */
   public static void writeToFile(ArrayList<DataEntry> data){
@@ -190,7 +190,6 @@ public class Analysis {
   /**
    * readExistingData
    * reads from storage file and puts data into DataEntries
-   * @param none
    * @return ArrayList of DataEntries read from the file
    */
   public static ArrayList<DataEntry> readExistingData(){
@@ -257,7 +256,9 @@ public class Analysis {
   /**
    * analysis
    * Takes in filters (independent and dependent) along with DataEntries to be analysed and returns the counts of occurences for each independent
-   * @param ArrayList<String> of the independent variables, ArrayList<String> of the dependent variables, ArrayList<DataEntry> of the data being filtered
+   * @param independent ArrayList<String> of the independent variables
+   * @param dependent ArrayList<String> of the dependent variables
+   * @param data ArrayList<DataEntry> of the data being filtered
    * @return ArrayList<Integer> of the number of occurences for each independent variable
    */
   public static ArrayList<Integer> analysis(ArrayList<String> independent, ArrayList<String> dependent, ArrayList<DataEntry> data){
@@ -293,7 +294,7 @@ public class Analysis {
   /**
    * getPercentages
    * used in conjunction with the analysis method, returns percent versions that can then be graphed
-   * @param ArrayList<Integer> of the occurences from Analysis
+   * @param count ArrayList<Integer> of the occurences from Analysis
    * @return ArrayList<Integer> of the percentage versions of the parameter ArrayList
    */
   public static ArrayList<Integer> getPercentages(ArrayList<Integer> count){
@@ -313,7 +314,7 @@ public class Analysis {
   /**
    * getAllSchools
    * Finds all unique schools
-   * @param ArrayList<DataEntry> to searh for all unique schools
+   * @param data ArrayList<DataEntry> to searh for all unique schools
    * @return ArrayList<String> with each unique school name
    */
   public static ArrayList<String> getAllSchools(ArrayList<DataEntry> data){ //returns ArrayList of unique schools
@@ -329,7 +330,7 @@ public class Analysis {
   /**
    * getAllYears
    * Finds all unique years
-   * @param ArrayList<DataEntry> to searh for all unique years
+   * @param data ArrayList<DataEntry> to searh for all unique years
    * @return ArrayList<Integer> with each unique year
    */
   public static ArrayList<Integer> getAllYears(ArrayList<DataEntry> data){ //returns ArrayList of unique years
@@ -345,7 +346,7 @@ public class Analysis {
   /**
    * getAllTags
    * Finds all unique tags
-   * @param ArrayList<DataEntry> to searh for all unique tags
+   * @param data ArrayList<DataEntry> to searh for all unique tags
    * @return ArrayList<String> with each unique tag
    */
   public static ArrayList<String> getAllTags(ArrayList<DataEntry> data){ //returns ArrayList of unique tags
