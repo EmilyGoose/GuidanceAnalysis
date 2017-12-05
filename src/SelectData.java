@@ -21,6 +21,7 @@ import javax.swing.SwingUtilities;
 
 import java.util.ArrayList;
 
+//TypeSelectFrame launches after the FileChooser button is pressed
 class TypeSelectFrame extends JFrame{
   JFrame thisFrame;
   String type = "";
