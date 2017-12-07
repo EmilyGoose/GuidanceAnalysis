@@ -21,7 +21,7 @@ import javax.swing.SwingUtilities;
 
 import java.util.ArrayList;
 
-//TypeSelectFrame launches after the FileChooser button is pressed
+//TypeSelectFrame launches after the graph data button is pressed on Starting frame
 class TypeSelectFrame extends JFrame{
   JFrame thisFrame;
   String type = "";
