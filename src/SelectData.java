@@ -27,7 +27,9 @@ class TypeSelectFrame extends JFrame{
   String type = "";
   String[] graphOptions = new String[]{"Please select an option", "Subject vs. School", "Year over Year Comparison", "Single Variable"};
   ArrayList<DataEntry> data;
-    
+  ArrayList<Integer> percentages = new ArrayList<Integer>();
+  Analysis analysisClass = new Analysis();
+  
   TypeSelectFrame(ArrayList<DataEntry> data) { //put in current year data only
     super("Filter Data");
     this.thisFrame = this; 
@@ -42,6 +44,7 @@ class TypeSelectFrame extends JFrame{
     //create a main panel for other panels
     JPanel main = new JPanel();
     main.setLayout(new BorderLayout());
+    
     JPanel panel1 = new JPanel();
     
     //Create new JLabel for header
@@ -58,8 +61,14 @@ class TypeSelectFrame extends JFrame{
     confirmButton.setPreferredSize(new Dimension(100, 50));
     confirmButton.addActionListener(new confirmButtonListener());
     
+    //Create button to go back
+    JButton backButton = new JButton("Back");
+    backButton.setPreferredSize(new Dimension(100, 50));
+    backButton.addActionListener(new backButtonListener());
+    
     panel1.add(graphList);
     panel1.add(confirmButton);
+    panel1.add(backButton);
     main.add(header, BorderLayout.NORTH);
     main.add(panel1, BorderLayout.CENTER);
     
@@ -84,6 +93,14 @@ class TypeSelectFrame extends JFrame{
     }      
   }
   
+  //ActionListener for button to go back to main menu
+  class backButtonListener implements ActionListener{
+    public void actionPerformed(ActionEvent e){
+      thisFrame.dispose();
+      new StartingFrame();
+    }
+  }
+  
   //ActionListener for the comboBox
   class graphListener implements ActionListener{
     public void actionPerformed(ActionEvent e){
@@ -91,331 +108,402 @@ class TypeSelectFrame extends JFrame{
       type = (String)cb.getSelectedItem();
     }
   }
-}
-
-
+  
 ////////////////////////////////////////////////////////////////////////
-class SelectDataFrame extends JFrame { //frame to pick data to compare schools and a tag
-  JFrame thisFrame;
-  int year;
-  String tag;
-  Analysis analysisClass = new Analysis();
-  ArrayList<String> dependent = new ArrayList<String>();
-  ArrayList<String> independent = new ArrayList<String>();
-  ArrayList<Integer> yearOption;
-  ArrayList<String> tagOption;
-  ArrayList<String> schools;
-  
-  //Constructor - this runs first
-  SelectDataFrame(ArrayList<DataEntry> data) { 
-    super("Filter Data");
-    this.thisFrame = this; 
-    this.setSize(1000,1000);
-    this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
-    this.setResizable (false);
+  class SelectDataFrame extends JFrame { //frame to pick data to compare schools and a tag
+    JFrame thisFrame;
+    int year;
+    String tag;
+    Analysis analysisClass = new Analysis();
+    ArrayList<String> dependent = new ArrayList<String>();
+    ArrayList<String> independent = new ArrayList<String>();
+    ArrayList<Integer> yearOption;
+    ArrayList<String> tagOption;
+    ArrayList<String> schools;
     
-   yearOption = analysisClass.getAllYears(data);
-   tagOption = analysisClass.getAllTags(data);
-   schools = analysisClass.getAllSchools(data);
-    
-    yearOption.add(0, 0000); //blank options to ensure data is chosen
-    tagOption.add(0, "Select...");
-                   
-    JCheckBox check;//define variables     
-    Font bigFont = new Font("", Font.PLAIN, 20);
-    
-    //create a main panel for other panels
-    JPanel main = new JPanel();
-    main.setLayout(new BorderLayout());
-    
-    JPanel panel1 = new JPanel(); //creating nested panels
-    JPanel panel2 = new JPanel();
-    JPanel panel3 = new JPanel();
-    panel2.setLayout(new GridLayout(0,3));
-    
-    //Create new JLabel for header
-    JLabel header = new JLabel("Select Data for Graphing", JLabel.CENTER);
-    header.setFont(bigFont);
-    
-    //Create JComboBox to select year
-    JComboBox yearList = new JComboBox(yearOption.toArray());
-    yearList.addActionListener(new yearListener());
-    yearList.setMaximumSize(new Dimension(150, 25));
-    panel1.add(new JLabel("Select Year"));
-    panel1.add(yearList);
-    
-    //Create JComboBox to select tag
-    JComboBox tagList = new JComboBox(tagOption.toArray());
-    tagList.addActionListener(new tagListener());
-    tagList.setMaximumSize(new Dimension(150, 25));
-    panel1.add(new JLabel("Select Tag"));
-    panel1.add(tagList);
-    
-    //Create CheckBox for each school
-    panel2.add(new JLabel("Select School(s)"));
-    for(int i = 0; i < schools.size(); i ++){
-      check = new JCheckBox(schools.get(i));
-      check.addActionListener(new checkBoxListener());
-      panel2.add(check);
+    //Constructor - this runs first
+    SelectDataFrame(ArrayList<DataEntry> data) { 
+      super("Filter Data");
+      this.thisFrame = this; 
+      this.setSize(1000,1000);
+      this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
+      this.setResizable (false);
+      
+      yearOption = analysisClass.getAllYears(data);
+      tagOption = analysisClass.getAllTags(data);
+      schools = analysisClass.getAllSchools(data);
+      
+      yearOption.add(0, 0000); //blank options to ensure data is chosen
+      tagOption.add(0, "Select...");
+      
+      JCheckBox check;//define variables     
+      Font bigFont = new Font("", Font.PLAIN, 20);
+      
+      //create a main panel for other panels
+      JPanel main = new JPanel();
+      main.setLayout(new BorderLayout());
+      
+      JPanel panel1 = new JPanel(); //creating nested panels
+      JPanel panel2 = new JPanel();
+      JPanel panel3 = new JPanel();
+      panel2.setLayout(new GridLayout(0,3));
+      panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
+      
+      //Create new JLabel for header
+      JLabel header = new JLabel("Select Data for Graphing", JLabel.CENTER);
+      header.setFont(bigFont);
+      
+      //Create JComboBox to select year
+      JComboBox yearList = new JComboBox(yearOption.toArray());
+      yearList.addActionListener(new yearListener());
+      yearList.setMaximumSize(new Dimension(150, 25));
+      panel1.add(new JLabel("Select Year"));
+      panel1.add(yearList);
+      
+      //Create JComboBox to select tag
+      JComboBox tagList = new JComboBox(tagOption.toArray());
+      tagList.addActionListener(new tagListener());
+      tagList.setMaximumSize(new Dimension(150, 25));
+      panel1.add(new JLabel("Select Tag"));
+      panel1.add(tagList);
+      
+      //Create CheckBox for each school
+      panel2.add(new JLabel("Select School(s)"));
+      for(int i = 0; i < schools.size(); i ++){
+        check = new JCheckBox(schools.get(i));
+        check.addActionListener(new checkBoxListener());
+        panel2.add(check);
+      }
+      
+      //Create new button to confirm selections and start the graph
+      JButton confirmButton = new JButton("Graph Data");
+      confirmButton.setPreferredSize(new Dimension(100, 50));
+      confirmButton.addActionListener(new confirmButtonListener());
+      panel3.add(confirmButton);
+      
+      //Create button to go back
+      JButton backButton = new JButton("Back");
+      backButton.setPreferredSize(new Dimension(100, 50));
+      backButton.addActionListener(new backButtonListener());
+      panel3.add(backButton);
+      
+      //add the main panel to the frame
+      main.add(header, BorderLayout.NORTH);
+      main.add(panel1, BorderLayout.WEST);
+      main.add(panel2, BorderLayout.CENTER);
+      main.add(panel3, BorderLayout.EAST);
+      this.add(main);
+      
+      //Start the app
+      this.setVisible(true);
     }
     
-    //Create new button to confirm selections and start the graph
-    JButton confirmButton = new JButton("Graph Data");
-    confirmButton.setPreferredSize(new Dimension(100, 50));
-    confirmButton.addActionListener(new confirmButtonListener());
-    panel3.add(confirmButton);
-    
-    //add the main panel to the frame
-    main.add(header, BorderLayout.NORTH);
-    main.add(panel1, BorderLayout.WEST);
-    main.add(panel2, BorderLayout.CENTER);
-    main.add(panel3, BorderLayout.EAST);
-    this.add(main);
-    
-    //Start the app
-    this.setVisible(true);
-  }
-  
-  //ActionListener for the year comboBox
-  class yearListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      JComboBox cb = (JComboBox)e.getSource();
-      year = (int)cb.getSelectedItem();
-    }
-  }
-  
-  //ActionListener for the tag comboBox
-  class tagListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      JComboBox cb = (JComboBox)e.getSource();
-      tag = (String)cb.getSelectedItem();
-    }
-  }
-  
-  //ActionListener for the checkBox
-  class checkBoxListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      JCheckBox checkBox = (JCheckBox)e.getSource();
-      if(checkBox.isSelected()){ //Add to independent ArrayList if checked, otherwise remove
-        independent.add(checkBox.getText());
-      }else if(!checkBox.isSelected()){
-        independent.remove(checkBox.getText());
+    //ActionListener for the year comboBox
+    class yearListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        JComboBox cb = (JComboBox)e.getSource();
+        year = (int)cb.getSelectedItem();
       }
     }
-  }
-  
-  //ActionListener for the button to launch graphs
-  class confirmButtonListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      if(!tag.equals("Select...") && year != 0000){ //Make sure an option is selected for both tags and years
+    
+    //ActionListener for the tag comboBox
+    class tagListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        JComboBox cb = (JComboBox)e.getSource();
+        tag = (String)cb.getSelectedItem();
+      }
+    }
+    
+    //ActionListener for the checkBox
+    class checkBoxListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        JCheckBox checkBox = (JCheckBox)e.getSource();
+        if(checkBox.isSelected()){ //Add to independent ArrayList if checked, otherwise remove
+          independent.add(checkBox.getText());
+        }else if(!checkBox.isSelected()){
+          independent.remove(checkBox.getText());
+        }
+      }
+    }
+    
+    //ActionListener for button to go back to TypeSelectFrame
+    class backButtonListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
         thisFrame.dispose();
-        dependent.add(tag);
-        dependent.add(Integer.toString(year));
-        //Create graph
-      //getPercentages(analysis(independent, dependent, data)) <----- feed this into graph methods
+        new TypeSelectFrame(data);
       }
     }
-  }   
-}
-
+    
+    //ActionListener for the button to launch graphs
+    class confirmButtonListener implements ActionListener{
+      Analysis analyze = new Analysis();
+      public void actionPerformed(ActionEvent e){
+        if(!tag.equals("Select...") && year != 0000){ //Make sure an option is selected for both tags and years
+          thisFrame.dispose();
+          dependent.add(tag);
+          dependent.add(Integer.toString(year));
+          
+          //Create graph
+          JFrame main = new JFrame("Data");
+          PieChart pie = new PieChart();
+          percentages = analyze.getPercentages(analyze.analysis(independent, dependent, data));
+          for (int i = 0; i < Analysis.getAllSchools(data).size(); i++) {
+            pie.addToData(independent.get(i), percentages.get(i));
+          }
+          main.add(pie);
+          main.setSize(1920,1080);
+          pie.setVisible(true);
+          main.setVisible(true);
+        }
+      }
+    }   
+  }
+  
 ///////////////////////////////////////////////////////////////////////////
-
-class YearDataFrame extends JFrame { //frame to select data vs year
-  JFrame thisFrame;
-  Analysis analysisClass = new Analysis();
-  String tag;
-  String school;
-  ArrayList<String> dependent = new ArrayList<String>();
-  ArrayList<String> independent = new ArrayList<String>();
-  ArrayList<DataEntry> data = analysisClass.readExistingData(); //gets all data, not just current year
-  ArrayList<String> tagOption = analysisClass.getAllTags(data);
-  ArrayList<String> schoolOption = analysisClass.getAllSchools(data);  
   
-  //Constructor - this runs first
-  YearDataFrame() { 
-    super("Filter Data");
-    this.thisFrame = this; 
+  class YearDataFrame extends JFrame { //frame to select data vs year
+    JFrame thisFrame;
+    String tag;
+    String school;
+    ArrayList<String> dependent = new ArrayList<String>();
+    ArrayList<String> independent = new ArrayList<String>();
+    ArrayList<DataEntry> data = analysisClass.readExistingData(); //gets all data, not just current year
+    ArrayList<String> tagOption = analysisClass.getAllTags(data);
+    ArrayList<String> schoolOption = analysisClass.getAllSchools(data);  
     
-    this.setSize(1000,1000);
-    this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
-    this.setResizable (false);
-    
-    JCheckBox check;//define variables     
-    Font bigFont = new Font("", Font.PLAIN, 20);
-    
-    tagOption.add(0, "none"); //add none option
-    schoolOption.add(0, "none");
-    
-    //create a main panel for other panels
-    JPanel main = new JPanel();
-    main.setLayout(new BorderLayout());
-    
-    JPanel panel1 = new JPanel(); //creating nested panels
-    JPanel panel2 = new JPanel();
-    JPanel panel3 = new JPanel();
-    panel2.setLayout(new BoxLayout(panel2, BoxLayout.Y_AXIS));
-    
-    //Create new JLabel for header
-    JLabel header = new JLabel("Select Data for Graphing", JLabel.CENTER);
-    header.setFont(bigFont);
-    
-    //Create JComboBox to select tag
-    JComboBox tagList = new JComboBox(tagOption.toArray());
-    tagList.addActionListener(new tagListener());
-    tagList.setMaximumSize(new Dimension(150, 25));
-    panel1.add(new JLabel("Select Tag"));
-    panel1.add(tagList);
-    
-    //Create JComboBox to select school
-    JComboBox schoolList = new JComboBox(schoolOption.toArray());
-    schoolList.addActionListener(new schoolListener());
-    schoolList.setMaximumSize(new Dimension(150, 25));
-    panel1.add(new JLabel("Select School"));
-    panel1.add(schoolList);
-    
-    //Create CheckBox for each year
-    ArrayList<Integer> years = analysisClass.getAllYears(data);
-    panel2.add(new JLabel("Select Year(s)"));
-    for(int i = 0; i < years.size(); i ++){
-      check = new JCheckBox(Integer.toString(years.get(i)));
-      check.addActionListener(new checkBoxListener());
-      panel2.add(check);
+    //Constructor - this runs first
+    YearDataFrame() { 
+      super("Filter Data");
+      this.thisFrame = this; 
+      
+      this.setSize(1000,1000);
+      this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
+      this.setResizable (false);
+      
+      JCheckBox check;//define variables     
+      Font bigFont = new Font("", Font.PLAIN, 20);
+      
+      tagOption.add(0, "none"); //add none option
+      schoolOption.add(0, "none");
+      
+      //create a main panel for other panels
+      JPanel main = new JPanel();
+      main.setLayout(new BorderLayout());
+      
+      JPanel panel1 = new JPanel(); //creating nested panels
+      JPanel panel2 = new JPanel();
+      JPanel panel3 = new JPanel();
+      panel2.setLayout(new BoxLayout(panel2, BoxLayout.Y_AXIS));
+      panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
+      
+      //Create new JLabel for header
+      JLabel header = new JLabel("Select Data for Graphing", JLabel.CENTER);
+      header.setFont(bigFont);
+      
+      //Create JComboBox to select tag
+      JComboBox tagList = new JComboBox(tagOption.toArray());
+      tagList.addActionListener(new tagListener());
+      tagList.setMaximumSize(new Dimension(150, 25));
+      panel1.add(new JLabel("Select Tag"));
+      panel1.add(tagList);
+      
+      //Create JComboBox to select school
+      JComboBox schoolList = new JComboBox(schoolOption.toArray());
+      schoolList.addActionListener(new schoolListener());
+      schoolList.setMaximumSize(new Dimension(150, 25));
+      panel1.add(new JLabel("Select School"));
+      panel1.add(schoolList);
+      
+      //Create CheckBox for each year
+      ArrayList<Integer> years = analysisClass.getAllYears(data);
+      panel2.add(new JLabel("Select Year(s)"));
+      for(int i = 0; i < years.size(); i ++){
+        check = new JCheckBox(Integer.toString(years.get(i)));
+        check.addActionListener(new checkBoxListener());
+        panel2.add(check);
+      }
+      
+      //Create new button to confirm selections and start the graph
+      JButton confirmButton = new JButton("Graph Data");
+      confirmButton.setPreferredSize(new Dimension(100, 50));
+      confirmButton.addActionListener(new confirmButtonListener());
+      panel3.add(confirmButton);
+      
+      //Create button to go back
+      JButton backButton = new JButton("Back");
+      backButton.setPreferredSize(new Dimension(100, 50));
+      backButton.addActionListener(new backButtonListener());
+      panel3.add(backButton);
+      
+      //add the main panel to the frame
+      main.add(header, BorderLayout.NORTH);
+      main.add(panel1, BorderLayout.WEST);
+      main.add(panel2, BorderLayout.CENTER);
+      main.add(panel3, BorderLayout.EAST);
+      this.add(main);
+      
+      //Start the app
+      this.setVisible(true);
     }
     
-    //Create new button to confirm selections and start the graph
-    JButton confirmButton = new JButton("Graph Data");
-    confirmButton.setPreferredSize(new Dimension(100, 50));
-    confirmButton.addActionListener(new confirmButtonListener());
-    panel3.add(confirmButton);
-    
-    //add the main panel to the frame
-    main.add(header, BorderLayout.NORTH);
-    main.add(panel1, BorderLayout.WEST);
-    main.add(panel2, BorderLayout.CENTER);
-    main.add(panel3, BorderLayout.EAST);
-    this.add(main);
-    
-    //Start the app
-    this.setVisible(true);
-  }
-  
-  //ActionListener for the comboBox (tag)
-  class tagListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      JComboBox cb = (JComboBox)e.getSource();
-      tag = (String)cb.getSelectedItem();
-    }
-  }
-  
-  //ActionListener for the comboBox (school)
-  class schoolListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      JComboBox cb = (JComboBox)e.getSource();
-      school = (String)cb.getSelectedItem();
-    }
-  }
-  
-  //ActionListener for the checkBox
-  class checkBoxListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      JCheckBox checkBox = (JCheckBox)e.getSource();
-      if(checkBox.isSelected()){ //Add to independent ArrayList if checked, otherwise remove
-        independent.add(checkBox.getText());
-      }else if(!checkBox.isSelected()){
-        independent.remove(checkBox.getText());
+    //ActionListener for the comboBox (tag)
+    class tagListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        JComboBox cb = (JComboBox)e.getSource();
+        tag = (String)cb.getSelectedItem();
       }
     }
+    
+    //ActionListener for the comboBox (school)
+    class schoolListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        JComboBox cb = (JComboBox)e.getSource();
+        school = (String)cb.getSelectedItem();
+      }
+    }
+    
+    //ActionListener for the checkBox
+    class checkBoxListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        JCheckBox checkBox = (JCheckBox)e.getSource();
+        if(checkBox.isSelected()){ //Add to independent ArrayList if checked, otherwise remove
+          independent.add(checkBox.getText());
+        }else if(!checkBox.isSelected()){
+          independent.remove(checkBox.getText());
+        }
+      }
+    }
+    
+    //ActionListener for button to go back to TypeSelectFrame
+    class backButtonListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        thisFrame.dispose();
+        new TypeSelectFrame(data);
+      }
+    }
+    
+    //ActionListener for the button to launch graphs
+    class confirmButtonListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        thisFrame.dispose();
+        if(!tag.equals("none")){ //adding the selected tag and school to dependent
+          dependent.add(tag);
+        }
+        if(!school.equals(null)){
+          dependent.add(school);
+        }
+        //Create graph
+        JFrame main = new JFrame("Data");
+        PieChart pie = new PieChart();
+        percentages = analysisClass.getPercentages(analysisClass.analysis(independent, dependent, data));
+        for (int i = 0; i < Analysis.getAllSchools(data).size(); i++) {
+          pie.addToData(independent.get(i), percentages.get(i));
+        }
+        main.add(pie);
+        main.setSize(1920,1080);
+        pie.setVisible(true);
+        main.setVisible(true);
+      }
+    }   
   }
   
-  //ActionListener for the button to launch graphs
-  class confirmButtonListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      thisFrame.dispose();
-      if(!tag.equals("none")){ //adding the selected tag and school to dependent
-        dependent.add(tag);
-      }
-      if(!school.equals(null)){
-        dependent.add(school);
-      }
-      //Create graph
-      //getPercentages(analysis(independent, dependent, data)) <----- feed this into graph methods
-    }
-  }   
-}
-
-
+  
 /////////////////////////////////////////////////////////////////////////////////////
-
-class SingleDataFrame extends JFrame { //frame to select data vs year
-  JFrame thisFrame;
-  Analysis analysisClass = new Analysis();
-  ArrayList<String> dependent = new ArrayList<String>();
-  ArrayList<String> independent = new ArrayList<String>();
   
-  //Constructor - this runs first
-  SingleDataFrame(ArrayList<DataEntry> data) { 
-    super("Filter Data");
-    this.thisFrame = this; 
+  class SingleDataFrame extends JFrame { //frame to select data vs year
+    JFrame thisFrame;
+    Analysis analysisClass = new Analysis();
+    ArrayList<String> dependent = new ArrayList<String>();
+    ArrayList<String> independent = new ArrayList<String>();
     
-    this.setSize(1000,1000);
-    this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
-    this.setResizable (false);
-    
-    JCheckBox check;//define variables     
-    Font bigFont = new Font("", Font.PLAIN, 20);
-    
-    //create a main panel for other panels
-    JPanel main = new JPanel();
-    main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
-    
-    JPanel panel1 = new JPanel(); //creating nested panels
-    panel1.setLayout(new BoxLayout(panel1, BoxLayout.X_AXIS));
-    
-    //Create new JLabel for header
-    JLabel header = new JLabel("Select Data for Graphing", JLabel.CENTER);
-    header.setFont(bigFont);
-    panel1.add(header);
-    
-    //Create JComboBox to select single variable
-    JComboBox tagList = new JComboBox(analysisClass.getAllSchools(data).toArray());
-    tagList.addActionListener(new comboListener());
-    tagList.setMaximumSize(new Dimension(150, 25));
-    panel1.add(new JLabel("Select Option"));
-    panel1.add(tagList);
-    
-    //Create new button to confirm selections and start the graph
-    JButton confirmButton = new JButton("Graph Data");
-    confirmButton.addActionListener(new confirmButtonListener());
-    panel1.add(confirmButton);
-    
-    //add the main panel to the frame
-    main.add(header);
-    main.add(panel1);
-    this.add(main);
-    
-    //Start the app
-    this.setVisible(true);
-  }
-  
-  //ActionListener for the comboBox for selecting variable
-  class comboListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      JComboBox cb = (JComboBox)e.getSource();
-      String item = (String)cb.getSelectedItem();
-      independent.clear(); //replace independent with current selection
-      independent.add(item);
+    //Constructor - this runs first
+    SingleDataFrame(ArrayList<DataEntry> data) { 
+      super("Filter Data");
+      this.thisFrame = this; 
+      
+      this.setSize(1000,1000);
+      this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
+      this.setResizable (false);
+      
+      JCheckBox check;//define variables     
+      Font bigFont = new Font("", Font.PLAIN, 20);
+      
+      //create a main panel for other panels
+      JPanel main = new JPanel();
+      main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
+      
+      JPanel panel1 = new JPanel(); //creating nested panels
+      panel1.setLayout(new BoxLayout(panel1, BoxLayout.X_AXIS));
+      
+      //Create new JLabel for header
+      JLabel header = new JLabel("Select Data for Graphing", JLabel.CENTER);
+      header.setFont(bigFont);
+      panel1.add(header);
+      
+      //Create JComboBox to select single variable
+      JComboBox tagList = new JComboBox(analysisClass.getAllSchools(data).toArray());
+      tagList.addActionListener(new comboListener());
+      tagList.setMaximumSize(new Dimension(150, 25));
+      panel1.add(new JLabel("Select Option"));
+      panel1.add(tagList);
+      
+      //Create new button to confirm selections and start the graph
+      JButton confirmButton = new JButton("Graph Data");
+      confirmButton.addActionListener(new confirmButtonListener());
+      panel1.add(confirmButton);
+      
+      //Create button to go back
+      JButton backButton = new JButton("Back");
+      backButton.setPreferredSize(new Dimension(100, 50));
+      backButton.addActionListener(new backButtonListener());
+      panel1.add(backButton);
+      
+      //add the main panel to the frame
+      main.add(header);
+      main.add(panel1);
+      this.add(main);
+      
+      //Start the app
+      this.setVisible(true);
     }
-  }
-  
-  //ActionListener for the button to launch graphs
-  class confirmButtonListener implements ActionListener{
-    public void actionPerformed(ActionEvent e){
-      thisFrame.dispose();
-      dependent.add(""); //no dependent, indexOf of blank string always zero so analysis method still works
-      //Create graph
-      //getPercentages(analysis(independent, dependent, data)) <----- feed this into graph methods
+    
+    //ActionListener for the comboBox for selecting variable
+    class comboListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        JComboBox cb = (JComboBox)e.getSource();
+        String item = (String)cb.getSelectedItem();
+        independent.clear(); //replace independent with current selection
+        independent.add(item);
+      }
     }
-  }   
+    
+    //ActionListener for button to go back to TypeSelectFrame
+    class backButtonListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        thisFrame.dispose();
+        new TypeSelectFrame(data);
+      }
+    }
+    
+    //ActionListener for the button to launch graphs
+    class confirmButtonListener implements ActionListener{
+      public void actionPerformed(ActionEvent e){
+        thisFrame.dispose();
+        dependent.add(""); //no dependent, indexOf of blank string always zero so analysis method still works
+        //Create graph
+        JFrame main = new JFrame("Data");
+        PieChart pie = new PieChart();
+        percentages = analysisClass.getPercentages(analysisClass.analysis(independent, dependent, data));
+        for (int i = 0; i < Analysis.getAllSchools(data).size(); i++) {
+          pie.addToData(independent.get(i), percentages.get(i));
+        }
+        main.add(pie);
+        main.setSize(1920,1080);
+        pie.setVisible(true);
+        main.setVisible(true);
+      }
+    }   
+  }
 }
 
 
