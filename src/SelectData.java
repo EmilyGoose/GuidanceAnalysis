@@ -18,6 +18,7 @@ import java.awt.GridLayout;
 import java.awt.Font;
 import javax.swing.BoxLayout;
 import javax.swing.SwingUtilities;
+import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 class TypeSelectFrame extends JFrame{
   JFrame thisFrame;
   String type = "";
-  String[] graphOptions = new String[]{"Please select an option", "Subject vs. School", "Year over Year Comparison", "Single Variable"};
+  String[] graphOptions = new String[]{"Please select an option", "Subject vs. School", "Year over Year Comparison"};
   ArrayList<DataEntry> data;
   ArrayList<Integer> percentages = new ArrayList<Integer>();
   Analysis analysisClass = new Analysis();
@@ -85,10 +86,6 @@ class TypeSelectFrame extends JFrame{
       }else if(type.equals("Year over Year Comparison")){
         thisFrame.dispose();
         new YearDataFrame();
-      }else if(type.equals("Single Variable")){
-        thisFrame.dispose();
-        new SingleDataFrame(data);
-      }else{ //no type selected, nothing happens
       }
     }      
   }
@@ -112,9 +109,8 @@ class TypeSelectFrame extends JFrame{
 ////////////////////////////////////////////////////////////////////////
   class SelectDataFrame extends JFrame { //frame to pick data to compare schools and a tag
     JFrame thisFrame;
-    int year;
-    String tag;
-    Analysis analysisClass = new Analysis();
+    int year = 0;
+    String tag = "Select...";
     ArrayList<String> dependent = new ArrayList<String>();
     ArrayList<String> independent = new ArrayList<String>();
     ArrayList<Integer> yearOption;
@@ -236,9 +232,9 @@ class TypeSelectFrame extends JFrame{
     
     //ActionListener for the button to launch graphs
     class confirmButtonListener implements ActionListener{
-      Analysis analyze = new Analysis();
+      Analysis analyzeInstance = new Analysis();
       public void actionPerformed(ActionEvent e){
-        if(!tag.equals("Select...") && year != 0000){ //Make sure an option is selected for both tags and years
+        if(!tag.equals("Select...") && year != 0000 && independent.size() > 0){ //Make sure an option is selected for tag, year, and school(s)
           thisFrame.dispose();
           dependent.add(tag);
           dependent.add(Integer.toString(year));
@@ -246,14 +242,16 @@ class TypeSelectFrame extends JFrame{
           //Create graph
           JFrame main = new JFrame("Data");
           PieChart pie = new PieChart();
-          percentages = analyze.getPercentages(analyze.analysis(independent, dependent, data));
-          for (int i = 0; i < Analysis.getAllSchools(data).size(); i++) {
+          percentages = analyzeInstance.getPercentages(analyzeInstance.analysis(independent, dependent, data));
+          for (int i = 0; i < independent.size(); i++) {
             pie.addToData(independent.get(i), percentages.get(i));
           }
           main.add(pie);
           main.setSize(1920,1080);
           pie.setVisible(true);
           main.setVisible(true);
+        }else{ //tag, year, or school has not been selected, display error message
+          JOptionPane.showMessageDialog(null,"Please ensure a year, program tag, and school have been selected.");
         }
       }
     }   
@@ -263,8 +261,8 @@ class TypeSelectFrame extends JFrame{
   
   class YearDataFrame extends JFrame { //frame to select data vs year
     JFrame thisFrame;
-    String tag;
-    String school;
+    String tag = "none";
+    String school = "none";
     ArrayList<String> dependent = new ArrayList<String>();
     ArrayList<String> independent = new ArrayList<String>();
     ArrayList<DataEntry> data = analysisClass.readExistingData(); //gets all data, not just current year
@@ -385,122 +383,37 @@ class TypeSelectFrame extends JFrame{
     //ActionListener for the button to launch graphs
     class confirmButtonListener implements ActionListener{
       public void actionPerformed(ActionEvent e){
-        thisFrame.dispose();
-        if(!tag.equals("none")){ //adding the selected tag and school to dependent
+        boolean valid = true;
+        
+        //adding the selected tag and school to dependent
+        if(!tag.equals("none") && !school.equals("none")){ //both options selected
           dependent.add(tag);
-        }
-        if(!school.equals(null)){
           dependent.add(school);
+        }else if(!tag.equals("none") && school.equals("none")){ //only tag has been selected
+          dependent.add(tag);
+        }else if(!school.equals("none") && tag.equals("none")){ //only school has been selected
+          dependent.add(school);
+        }else{
+          JOptionPane.showMessageDialog(null,"Only one selection can be \"none\"."); //both are none, show error message
+          valid = false;
         }
-        //Create graph
-        JFrame main = new JFrame("Data");
-        PieChart pie = new PieChart();
-        percentages = analysisClass.getPercentages(analysisClass.analysis(independent, dependent, data));
-        for (int i = 0; i < Analysis.getAllSchools(data).size(); i++) {
-          pie.addToData(independent.get(i), percentages.get(i));
+           
+        if(independent.size() > 0 && valid){ //check if year hasn't been selected
+          thisFrame.dispose();
+          //Create graph
+          JFrame main = new JFrame("Data");
+          PieChart pie = new PieChart();
+          percentages = analysisClass.getPercentages(analysisClass.analysis(independent, dependent, data));
+          for (int i = 0; i < independent.size(); i++) {
+            pie.addToData(independent.get(i), percentages.get(i));
+          }
+          main.add(pie);
+          main.setSize(1920,1080);
+          pie.setVisible(true);
+          main.setVisible(true);
+        }else if(valid){ //year has not been selected
+          JOptionPane.showMessageDialog(null,"Please ensure a year has been selected.");
         }
-        main.add(pie);
-        main.setSize(1920,1080);
-        pie.setVisible(true);
-        main.setVisible(true);
-      }
-    }   
-  }
-  
-  
-/////////////////////////////////////////////////////////////////////////////////////
-  
-  class SingleDataFrame extends JFrame { //frame to select data vs year
-    JFrame thisFrame;
-    Analysis analysisClass = new Analysis();
-    ArrayList<String> dependent = new ArrayList<String>();
-    ArrayList<String> independent = new ArrayList<String>();
-    
-    //Constructor - this runs first
-    SingleDataFrame(ArrayList<DataEntry> data) { 
-      super("Filter Data");
-      this.thisFrame = this; 
-      
-      this.setSize(1000,1000);
-      this.setLocationRelativeTo(null); //start the frame in the center of the screen;  
-      this.setResizable (false);
-      
-      JCheckBox check;//define variables     
-      Font bigFont = new Font("", Font.PLAIN, 20);
-      
-      //create a main panel for other panels
-      JPanel main = new JPanel();
-      main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
-      
-      JPanel panel1 = new JPanel(); //creating nested panels
-      panel1.setLayout(new BoxLayout(panel1, BoxLayout.X_AXIS));
-      
-      //Create new JLabel for header
-      JLabel header = new JLabel("Select Data for Graphing", JLabel.CENTER);
-      header.setFont(bigFont);
-      panel1.add(header);
-      
-      //Create JComboBox to select single variable
-      JComboBox tagList = new JComboBox(analysisClass.getAllSchools(data).toArray());
-      tagList.addActionListener(new comboListener());
-      tagList.setMaximumSize(new Dimension(150, 25));
-      panel1.add(new JLabel("Select Option"));
-      panel1.add(tagList);
-      
-      //Create new button to confirm selections and start the graph
-      JButton confirmButton = new JButton("Graph Data");
-      confirmButton.addActionListener(new confirmButtonListener());
-      panel1.add(confirmButton);
-      
-      //Create button to go back
-      JButton backButton = new JButton("Back");
-      backButton.setPreferredSize(new Dimension(100, 50));
-      backButton.addActionListener(new backButtonListener());
-      panel1.add(backButton);
-      
-      //add the main panel to the frame
-      main.add(header);
-      main.add(panel1);
-      this.add(main);
-      
-      //Start the app
-      this.setVisible(true);
-    }
-    
-    //ActionListener for the comboBox for selecting variable
-    class comboListener implements ActionListener{
-      public void actionPerformed(ActionEvent e){
-        JComboBox cb = (JComboBox)e.getSource();
-        String item = (String)cb.getSelectedItem();
-        independent.clear(); //replace independent with current selection
-        independent.add(item);
-      }
-    }
-    
-    //ActionListener for button to go back to TypeSelectFrame
-    class backButtonListener implements ActionListener{
-      public void actionPerformed(ActionEvent e){
-        thisFrame.dispose();
-        new TypeSelectFrame(data);
-      }
-    }
-    
-    //ActionListener for the button to launch graphs
-    class confirmButtonListener implements ActionListener{
-      public void actionPerformed(ActionEvent e){
-        thisFrame.dispose();
-        dependent.add(""); //no dependent, indexOf of blank string always zero so analysis method still works
-        //Create graph
-        JFrame main = new JFrame("Data");
-        PieChart pie = new PieChart();
-        percentages = analysisClass.getPercentages(analysisClass.analysis(independent, dependent, data));
-        for (int i = 0; i < Analysis.getAllSchools(data).size(); i++) {
-          pie.addToData(independent.get(i), percentages.get(i));
-        }
-        main.add(pie);
-        main.setSize(1920,1080);
-        pie.setVisible(true);
-        main.setVisible(true);
       }
     }   
   }
