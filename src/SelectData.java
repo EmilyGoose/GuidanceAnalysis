@@ -19,8 +19,10 @@ import java.awt.Font;
 import javax.swing.BoxLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
-
 import java.util.ArrayList;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import java.awt.FlowLayout;
 
 //TypeSelectFrame launches after the graph data button is pressed on Starting frame
 class TypeSelectFrame extends JFrame{
@@ -29,6 +31,7 @@ class TypeSelectFrame extends JFrame{
   String[] graphOptions = new String[]{"Please select an option", "Subject vs. School", "Year over Year Comparison"};
   ArrayList<DataEntry> data;
   ArrayList<Integer> percentages = new ArrayList<Integer>();
+  ArrayList<Integer> counts = new ArrayList<Integer>();
   Analysis analysisClass = new Analysis();
   
   TypeSelectFrame(ArrayList<DataEntry> data) { //put in current year data only
@@ -240,16 +243,52 @@ class TypeSelectFrame extends JFrame{
           dependent.add(Integer.toString(year));
           
           //Create graph
+          thisFrame.dispose();
+          
+          //new frame for graph and table
           JFrame main = new JFrame("Data");
+          thisFrame = main;
+          main.setLayout(new FlowLayout());
+          
+          //create pie panel
           PieChart pie = new PieChart();
-          percentages = analyzeInstance.getPercentages(analyzeInstance.analysis(independent, dependent, data));
-          for (int i = 0; i < independent.size(); i++) {
+          pie.setPreferredSize(new Dimension(1000,1000));
+          
+          //Create button to go back
+          JButton backButton = new JButton("Back");
+          backButton.setPreferredSize(new Dimension(100, 50));
+          backButton.addActionListener(new backButtonListener());
+          
+          //get the statistics and graph them
+          counts = analysisClass.analysis(independent, dependent, data);
+          percentages = analysisClass.getPercentages(counts); //convert to percentages
+          for (int i = 0; i < independent.size(); i++) { //add data to pie panel
             pie.addToData(independent.get(i), percentages.get(i));
           }
+          
+          //add independent data and counts to a 2D array to make the jtable
+          String[][] tableData = new String[independent.size()][2];
+          for(int i = 0; i < independent.size(); i ++){
+            tableData[i][0] = independent.get(i);
+            tableData[i][1] = Integer.toString(counts.get(i));
+          }
+          //Create Jtable
+          JTable jt=new JTable(tableData, new String[]{"Independent", "Count"});
+          jt.getColumnModel().getColumn(0).setPreferredWidth(250);
+          
+          //Add panels to the frame
           main.add(pie);
+          JPanel tablePanel = new JPanel();
+          tablePanel.add(jt);
+          tablePanel.add(backButton);
+          main.add(tablePanel);
           main.setSize(1920,1080);
           pie.setVisible(true);
           main.setVisible(true);
+          
+          System.out.println(independent);
+          System.out.println(dependent);
+          System.out.println(counts);
         }else{ //tag, year, or school has not been selected, display error message
           JOptionPane.showMessageDialog(null,"Please ensure a year, program tag, and school have been selected.");
         }
@@ -397,20 +436,54 @@ class TypeSelectFrame extends JFrame{
           JOptionPane.showMessageDialog(null,"Only one selection can be \"none\"."); //both are none, show error message
           valid = false;
         }
-           
-        if(independent.size() > 0 && valid){ //check if year hasn't been selected
+        
+        if(independent.size() > 0 && valid){ //check if year has been selected, graph is it has
           thisFrame.dispose();
-          //Create graph
+          
+          //new frame for graph and table
           JFrame main = new JFrame("Data");
+          thisFrame = main;
+          main.setLayout(new FlowLayout());
+          
+          //create pie panel
           PieChart pie = new PieChart();
-          percentages = analysisClass.getPercentages(analysisClass.analysis(independent, dependent, data));
-          for (int i = 0; i < independent.size(); i++) {
+          pie.setPreferredSize(new Dimension(1000,1000));
+          
+          //Create button to go back
+          JButton backButton = new JButton("Back");
+          backButton.setPreferredSize(new Dimension(100, 50));
+          backButton.addActionListener(new backButtonListener());
+          
+          //get the statistics and graph them
+          counts = analysisClass.analysis(independent, dependent, data);
+          percentages = analysisClass.getPercentages(counts); //convert to percentages
+          for (int i = 0; i < independent.size(); i++) { //add data to pie panel
             pie.addToData(independent.get(i), percentages.get(i));
           }
+          
+          //add independent data and counts to a 2D array to make the jtable
+          String[][] tableData = new String[independent.size()][2];
+          for(int i = 0; i < independent.size(); i ++){
+            tableData[i][0] = independent.get(i);
+            tableData[i][1] = Integer.toString(counts.get(i));
+          }
+          //Create Jtable
+          JTable jt=new JTable(tableData, new String[]{"Independent", "Count"});
+          jt.getColumnModel().getColumn(0).setPreferredWidth(250);
+          
+          //Add panels to the frame
           main.add(pie);
+          JPanel tablePanel = new JPanel();
+          tablePanel.add(jt);
+          tablePanel.add(backButton);
+          main.add(tablePanel);
           main.setSize(1920,1080);
           pie.setVisible(true);
           main.setVisible(true);
+          
+          System.out.println(independent);
+          System.out.println(dependent);
+          System.out.println(counts);
         }else if(valid){ //year has not been selected
           JOptionPane.showMessageDialog(null,"Please ensure a year has been selected.");
         }
