@@ -318,17 +318,21 @@ public class Analysis {
       for(int j = 0; j < independent.size(); j ++){ //add data that fits the independent variable to new arraylist
         if(data.get(i).getCombinedTraits().indexOf(independent.get(j)) != -1){
           matchData.add(data.get(i));
+          System.out.println(data.get(i).getCombinedTraits());
         }
       }
     }
     //compare data that matches independent variable to see if it matches the dependent variable
     for(int a = 0; a < matchData.size(); a ++){
-      for(int b = 0; b < dependent.size(); b ++){ 
-        if(matchData.get(a).getCombinedTraits().indexOf(dependent.get(b)) != -1){
-          for(int c = 0; c < independent.size(); c ++){
-            if(matchData.get(a).getCombinedTraits().indexOf(independent.get(c)) != -1){ //add to count in corresponding arraylist index
-              count.set(c, count.get(c) + 1);
-            }
+      for(int b = 0; b < dependent.size(); b ++){ //go through each dependent, DataEntry to null if it doesn't match a dependent
+        if(matchData.get(a).getCombinedTraits().indexOf(dependent.get(b)) == -1){ 
+          matchData.set(a, null);
+        }
+      }
+      if(matchData.get(a) != null){ //meets all dependent variables, add to count
+        for(int c = 0; c < independent.size(); c ++){
+          if(matchData.get(a).getCombinedTraits().indexOf(independent.get(c)) != -1){ //add to count in corresponding arraylist index
+            count.set(c, count.get(c) + 1);
           }
         }
       }
